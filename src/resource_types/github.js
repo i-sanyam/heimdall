@@ -1,7 +1,6 @@
 const axios = require('axios');
 const common = require('../utils/constants');
 const BASE_URL = 'https://api.github.com';
-const USERNAME = 'pankaj-yadav-shipsy';
 
 const actions = {
     // collaborator: {
