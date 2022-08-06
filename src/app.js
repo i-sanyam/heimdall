@@ -3,26 +3,14 @@ const cookieParser = require('cookie-parser')
 const app = Express();
 const cors = require('cors');
 
-// const auth = require('./auth');
-
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
 
+app.use('/api', require('./routes'));
+
 app.get('/api/h', (req, res) => {
-  return res.send('OK');
-});
-app.get('/oauth/callback', (req, res) => {
-  const originalUrl = req.originalUrl;
-  const tempCode = originalUrl.split('=')[1];
-  return res.send('Paji You are logged in now');
-});
-app.get('/login', (req, res) => {
-  return res.redirect('https://github.com/login/oauth/authorize?response_type=code&client_id=d3f5f83865b9da52e645&scope=read&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Foauth%2Fcallback');
-})
-app.post('/oauth/callback', (req, res) => {
-  //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
   return res.send('OK');
 });
 
