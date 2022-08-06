@@ -3,13 +3,13 @@ const axios = require('axios');
 
 const config = require('../config.json');
 
-const { validateUser } = require('../service/user');
+const { validateUserAndGetCookie } = require('../service/user');
 
 const GITHUB_AUTHORIZE_URL_INTERFACE = new URL(config.OAUTH.GITHUB.AUTHORIZE_URL);
 GITHUB_AUTHORIZE_URL_INTERFACE.searchParams.append('response_type', 'code');
 GITHUB_AUTHORIZE_URL_INTERFACE.searchParams.append('client_id', config.OAUTH.GITHUB.CLIENT_ID);
 GITHUB_AUTHORIZE_URL_INTERFACE.searchParams.append('redirect_uri', config.SELF_BASE_URL + config.OAUTH.GITHUB.CALLBACK_URL)
-const GITHUB_AUTHORIZE_URL = GIT_AUTHORIZE_URL_INTERFACE.href;
+const GITHUB_AUTHORIZE_URL = GITHUB_AUTHORIZE_URL_INTERFACE.href;
 
 const requestAccessToken = async (code) => {
     if (!code || code.length === 0) {
@@ -48,7 +48,7 @@ const requestUserData = async (accessToken) => {
     if (response.status != 200 || !response.data) {
         throw new Error('Unable to retrieve user data from access token');
     }
-    console.log(response.data);
+    return response.data;
 }
 
 oAuthRouter.get('/callback', async (req, res) => {
@@ -56,8 +56,9 @@ oAuthRouter.get('/callback', async (req, res) => {
     const tempCode = originalUrl.split('=')[1];
     const accessToken = await requestAccessToken(tempCode);
     const userData = await requestUserData(accessToken);
-    await validateUser('GITHUB', userData);
-    return res.send('Paji You are logged in now');
+    const cookie = await validateUserAndGetCookie('GITHUB', userData);
+    res.cookie('access_token', cookie);
+    return res.redirect('/api/user/');
 });
 
 oAuthRouter.get('/login', (req, res) => {
