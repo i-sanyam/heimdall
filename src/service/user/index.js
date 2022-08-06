@@ -1,3 +1,5 @@
+const { ObjectId } = require('mongodb');
+
 const jwtService = require('./jwt');
 
 const GITHUB_OAUTH_TYPE = "GITHUB";
@@ -48,8 +50,9 @@ const getUser = async (userId) => {
     if (!userId) {
         throw new Error('userId is required');
     }
-    const c = await MONGODB_CONNECTOR.collection('users').findOne({_id: userId});
-    return c;
+   return await MONGODB_CONNECTOR.collection('users').find({
+        _id: new ObjectId(userId),
+    }).toArray();
 }
 
 module.exports = {

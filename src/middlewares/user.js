@@ -7,8 +7,12 @@ const verifyUser = async (req, res, next) => {
     }
     try {
         const { data: userData } = await userJWTService.verifyJWT(req.cookies.access_token);
-        req.userData = await userService.getUser(userData.id);
-        console.log('a');
+        const savedUserData = await userService.getUser(userData.id);
+        if (!savedUserData || savedUserData.length === 0) {
+            throw new Error('User not found');
+        }
+        req.userData = savedUserData[0];
+        next();
     } catch (err) {
         return res.send('Unauthenticated', err);
     }
