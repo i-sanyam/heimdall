@@ -14,7 +14,7 @@ app.get('/api/h', (req, res) => {
   return res.send('OK');
 });
 
-let MONGODB_CONNECTOR = null;
+MONGODB_CONNECTOR = null;
 (async () => {
   const { MONGO_CONNECTOR: db } = await require('./startup')();
   MONGODB_CONNECTOR = db;

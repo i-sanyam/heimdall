@@ -4,6 +4,7 @@ const validateGithubUser = async (userData) => {
     // query if the user exists
     // if does not exist create the user
     // create a jwt and return it
+    
 };
 
 const validateUser = async (oauthType, userData) => {
