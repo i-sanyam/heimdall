@@ -1,66 +1,72 @@
 const Express = require("express");
 const cookieParser = require('cookie-parser')
-const path = require('path');
-const fs = require('fs');
 const app = Express();
 const cors = require('cors');
 
-
-const auth = require('./auth');
-// const posts = require('./posts/services/postService');
-
-const config = require('./config');
+// const auth = require('./auth');
 
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
 
-// app.use("/", auth.verifyToken, async (req, res) => { // homepage
-//   // i will hit api /api/posts/getPosts
-//   let posts = await posts.getPosts({
-//     user_id: req.userDetails.user_id,
-//     home_feed: true,
-//     limit: 25,
-//     offset: 0,
+app.get('/api/h', (req, res) => {
+  return res.send('OK');
+});
+app.get('/oauth/callback', (req, res) => {
+  const originalUrl = req.originalUrl;
+  const tempCode = originalUrl.split('=')[1];
+  return res.send('Paji You are logged in now');
+});
+app.get('/login', (req, res) => {
+  return res.redirect('https://github.com/login/oauth/authorize?response_type=code&client_id=d3f5f83865b9da52e645&scope=read&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Foauth%2Fcallback');
+})
+app.post('/oauth/callback', (req, res) => {
+  //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
+  return res.send('OK');
+});
+
+let MONGODB_CONNECTOR = null;
+(async () => {
+  const { MONGO_CONNECTOR: db } = await require('./startup')();
+  MONGODB_CONNECTOR = db;
+  app.listen(3000, () => {
+    console.log(`Server started on localhost:3000`);
+  });
+  const tt = await db.listCollections();
+  console.log(tt);
+})();
+
+
+// app.get('/', (req, res) => {
+//   auth.verifyToken(req, {
+//     // status: () => {
+//     // return {
+//     send: () => {
+//       return res.redirect('/login');
+//     }
+//     // }
+//     // }
+//   }, () => {
+//     console.error("passed");
+//     return res.sendFile(path.resolve('../public/index.html'));
 //   });
-//   // hbs give homepage
 // });
 
-app.use('/css', Express.static(path.resolve('../public/css')));
-app.use('/js', Express.static(path.resolve('../public/js')));
-app.use('/app', Express.static(path.resolve('../public/app')));
-app.use('/components', Express.static(path.resolve('../public/components')));
-
-app.get('/', (req, res) => {
-  auth.verifyToken(req, {
-    // status: () => {
-    // return {
-    send: () => {
-      return res.redirect('/login');
-    }
-    // }
-    // }
-  }, () => {
-    console.error("passed");
-    return res.sendFile(path.resolve('../public/index.html'));
-  });
-});
-
-app.use('/login', (req, res) => {
-  auth.verifyToken(req, {
-    // status: () => {
-    // return {
-    send: () => {
-      return res.sendFile(path.resolve('./../public/components/userLogin.html'));
-    }
-    // }
-    // }
-  }, () => {
-    console.error("passed");
-    return res.sendFile(path.resolve('./../public/index.html'));
-  });
-});
+// app.use('/login', (req, res) => {
+//   auth.verifyToken(req, {
+//     // status: () => {
+//     // return {
+//     send: () => {
+//       return res.sendFile(path.resolve('./../public/components/userLogin.html'));
+//     }
+//     // }
+//     // }
+//   }, () => {
+//     console.error("passed");
+//     return res.sendFile(path.resolve('./../public/index.html'));
+//   });
+// });
 
 // app.use('/signup', (req, res) => {
 //   auth.verifyToken(req, {
@@ -77,8 +83,4 @@ app.use('/login', (req, res) => {
 //   });
 // });
 
-app.use('/api', require('./routes'));
-
-app.listen(config.PORT, () => {
-  console.log(`Server started on localhost:${config.PORT}`);
-});
+// app.use('/api', require('./routes'));
