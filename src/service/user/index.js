@@ -11,7 +11,7 @@ const validateGithubUserAndGetCookie = async (userData) => {
         OAUTH_TYPE: GITHUB_OAUTH_TYPE,
     }).toArray();
     if (!existingUserData || existingUserData.length === 0) {
-        const newUserId = await MONGODB_CONNECTOR.collection('users').insertOne({
+        const { insertedId: newUserId } = await MONGODB_CONNECTOR.collection('users').insertOne({
             id: userData.id,
             login: userData.login,
             avatar_url: userData.avatar_url,
@@ -20,7 +20,7 @@ const validateGithubUserAndGetCookie = async (userData) => {
             createdAt: timeNow,
             updatedAt: timeNow,
         });
-        console.log('deee');
+        userId = newUserId;
     } else {
         userId = existingUserData[0]._id;
         await MONGODB_CONNECTOR.collection('users').updateOne({
@@ -44,6 +44,15 @@ const validateUserAndGetCookie = async (oauthType, userData) => {
     throw new Error('Oauth Method not available');
 };
 
+const getUser = async (userId) => {
+    if (!userId) {
+        throw new Error('userId is required');
+    }
+    const c = await MONGODB_CONNECTOR.collection('users').findOne({_id: userId});
+    return c;
+}
+
 module.exports = {
     validateUserAndGetCookie,
+    getUser,
 };
