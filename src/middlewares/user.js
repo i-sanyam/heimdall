@@ -3,7 +3,7 @@ const userService = require('../service/user');
 
 const verifyUser = async (req, res, next) => {
     if (!req.cookies?.access_token || req.cookies.access_token.length == 0) {
-        return res.redirect('/');
+        return res.send('You are not logged in');
     }
     try {
         const { data: userData } = await userJWTService.verifyJWT(req.cookies.access_token);

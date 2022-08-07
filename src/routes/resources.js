@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const _ = require('underscore');
 const constants = require('../utils/constants');
-const { executeQuery } = require('../startup/mysql');
 
 router.use((req, res, next) => {
     // write auth middleware here
