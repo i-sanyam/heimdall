@@ -3,7 +3,6 @@ const common = require('../utils/constants');
 const BASE_URL = 'https://api.github.com';
 
 const actions = {
-    // collaborator: {
         prerequisite: async (username) => {
             const { data } = await axios({
                 method: 'GET',
@@ -44,7 +43,6 @@ const actions = {
                 }
             });
         }
-    // }
 };
 
 module.exports = { actions } ;
