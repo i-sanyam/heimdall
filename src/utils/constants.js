@@ -1,4 +1,4 @@
-const requestStatus = {
+const requestStatusesEnum = {
     'OPEN': 1,
     'APPROVED': 2,
     'REJECTED': 3,
@@ -6,7 +6,7 @@ const requestStatus = {
     'DELETED': 5,
 };
 
-const requestStatusReverse = {
+const requestStatusesEnumReverse = {
     1: { name: 'Waiting for Approval', color: 'info'},
     2: { name: 'Access Granted', color: 'success'},
     3: { name: 'Request Denied', color: 'danger'},
@@ -14,7 +14,17 @@ const requestStatusReverse = {
     5: { name: 'Access Revoked', color: 'warning' },
 };
 
-const resourceTypes = {
+const resourceTypesEnum = {
     GITHUB: 1,
 };
-module.exports = { requestStatus, requestStatusReverse, resourceTypes, gitname: 'pankaj-yadav-shipsy' }; 
+
+const resourceTypesEnumReverse = {
+    1: 'GITHUB',
+};
+
+module.exports = { 
+    requestStatusesEnum, 
+    requestStatusesEnumReverse, 
+    resourceTypesEnum,
+    resourceTypesEnumReverse, 
+}; 

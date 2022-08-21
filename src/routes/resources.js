@@ -1,25 +1,30 @@
-const router = require('express').Router();
+const resourceRouter = require('express').Router();
 const _ = require('underscore');
+
 const constants = require('../utils/constants');
+const userMiddleware = require('../middlewares/user');
+const { sendApiResponse } = require('../utils/responses');
 
-router.use((req, res, next) => {
-    // write auth middleware here
-    req.employeeDetails = {
-      id: 1,
-    };
-    next();
-});
+resourceRouter.use(userMiddleware.verifyUser);
 
-router.get('/type', async (req, res) => {
+resourceRouter.get('/type', async (req, res) => {
     try {
-        const data = await executeQuery(`SELECT * FROM resource_types`);
-        return data;
+        const supportedResourceTypes = Object.keys(constants.resourceTypesEnum);
+        return sendApiResponse(res, {
+            status: 200,
+            message: 'OK',
+            data: { types: supportedResourceTypes },
+        });
     } catch (e) {
-        return res.send('ERROR');
+        return sendApiResponse(res, {
+            status: 400,
+            message: 'Error',
+            data: { err }
+        });
     }
 });
 
-router.get('/', async (req, res) => {
+resourceRouter.get('/', async (req, res) => {
     try {
         const employeeDetails = req.employeeDetails;
         console.log(employeeDetails);
@@ -47,4 +52,4 @@ router.get('/', async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = resourceRouter;
