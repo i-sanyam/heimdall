@@ -1,6 +1,6 @@
 'use strict';
 
-const sendApiResponse = (res, params, options) => {
+const sendApiResponse = (res, params = {}, options = {}) => {
     const { clearCookie = false, cookieNameArray = [] } = options;
     const { status = '200', message = 'OK', data = {} } = params;
     
