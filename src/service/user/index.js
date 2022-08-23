@@ -6,7 +6,6 @@ const Mongo = require('../../mongo');
 const GITHUB_OAUTH_TYPE = "GITHUB";
 
 const validateGithubUserAndGetCookie = async (userData) => {
-    const timeNow = new Date();
     let userId = null;
 
     const existingUserData = await Mongo.Users.find({
@@ -22,8 +21,6 @@ const validateGithubUserAndGetCookie = async (userData) => {
             avatar_url: userData.avatar_url,
             OAUTH_TYPE: GITHUB_OAUTH_TYPE,
             oauth_provider_metadata: userData,
-            createdAt: timeNow,
-            updatedAt: timeNow,
         });
         userId = newUserId;
     } else {
@@ -33,11 +30,10 @@ const validateGithubUserAndGetCookie = async (userData) => {
         }, { 
             $set: {
                 avatar_url: userData.avatar_url,
-                updatedAt: timeNow,
             }
         });
     }
-    
+
     return jwtService.generateJWT({
         id: userId,
     });
