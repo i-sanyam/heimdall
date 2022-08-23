@@ -12,7 +12,7 @@ const validateGithubUserAndGetCookie = async (userData) => {
         id: userData.id,
         login: userData.login,
         OAUTH_TYPE: GITHUB_OAUTH_TYPE,
-    }).toArray();
+    });
 
     if (!existingUserData || existingUserData.length === 0) {
         const { insertedId: newUserId } = await Mongo.Users.insertOne({
@@ -52,7 +52,7 @@ const getUser = async (userId) => {
     }
    return await Mongo.Users.find({
         _id: new ObjectId(userId),
-    }).toArray();
+    });
 }
 
 module.exports = {

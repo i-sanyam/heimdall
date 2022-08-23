@@ -6,7 +6,7 @@ class BaseMongoCollection {
         this._collection = MONGODB_CONNECTOR.collection(COLLECTION_NAME);
     }
     async find(filter, options) {
-        return await this._collection.find(filter, options);
+        return await this._collection.find(filter, options).toArray();
     }
     async insertOne(doc, options) {
         doc.createdAt = new Date();
