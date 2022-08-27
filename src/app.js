@@ -8,10 +8,10 @@ app.use(Express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
 
-MONGODB_CONNECTOR = null;
+global.MONGODB_CONNECTOR = null;
 (async () => {
-  const { MONGO_CONNECTOR: db } = await require('./startup')();
-  MONGODB_CONNECTOR = db;
+  const { MONGO_CONNECTOR: db } = await require('./service/startup')();
+  global.MONGODB_CONNECTOR = db;
   await db.listCollections();
 
   app.use('/api', require('./routes'));
