@@ -1,3 +1,5 @@
+'use strict';
+
 const requestStatusesEnum = {
     'OPEN': 1,
     'APPROVED': 2,

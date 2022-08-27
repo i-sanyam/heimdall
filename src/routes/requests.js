@@ -31,7 +31,7 @@ requestRouter.post('/', ExpressRouteHandler(async (req) => {
 
   const userId = req.userData._id.toString();
 
-  const existingUserRequests = await requestService.getUserRequests(userId, resourceId);
+  const existingUserRequests = await requestService.getUserRequests(userId, constants.requestStatusesEnum.OPEN, resourceId);
   if (!_.isEmpty(existingUserRequests)) {
     return [{ status: 409, message: 'Request Already Raised' }];
   }
@@ -40,32 +40,24 @@ requestRouter.post('/', ExpressRouteHandler(async (req) => {
   return;
 }));
 
-requestRouter.delete('/', ExpressRouteHandler(async (req, res) => {
-  const userDetails = req.userData;
-  const existingUserRequest = await requestService.getUserRequests(userDetails._id, resourceId);
-  if (_.isEmpty(existingUserRequest)) {
+requestRouter.delete('/', ExpressRouteHandler(async (req) => {
+  const userId = req.userData._id.toString();
+  const requestId = req.body.requestId;
+  if (!requestId) {
+    return [{ status: 400, message: 'Request Id not present' }]
+  }
+
+  const existingUserRequests = await requestService.getUserRequestById({ userId, requestId });
+  if (_.isEmpty(existingUserRequests)) {
     return [{ status: 404, message: 'Request Not Found' }];
   }
-  //delete logic
+  const existingUserRequest = existingUserRequests[0];
+
+  if (existingUserRequest.status !== constants.requestStatusesEnum.OPEN) {
+    return [{ status: 405, message: 'Invalid Request Status for deletion' }];
+  }
+  await requestService.deleteRequestById({ userId, requestId });
   return;
-
-  // try {
-  //   const resourceID = req.body.resourceID;
-  //   if (!resourceID) {
-  //     return res.status(404).send('Resource Id Not Present');
-  //   }
-  //   const userDetails = req.userDetails;
-
-  //   const resourceData = await executeQuery('SELECT 1 FROM resources WHERE resource_id = ?', [resourceID]);
-  //   if (_.isEmpty(resourceData)) {
-  //     return res.status(404).send('Resource Id Not Present');
-  //   }
-
-  //   const addRequestQuery = 'UPDATE resource_requests SET status = ? WHERE resource_id = ?';
-  //   await executeQuery(addRequestQuery, [constants.requestStatus.DELETED, resourceID]);
-  // } catch (e) {
-  //   return res.status(400);
-  // }
 }));
 
 module.exports = requestRouter;
