@@ -31,6 +31,14 @@ const logAndHandleExpressErrors = (err, req, res, next) => {
 
 const startLogApiRequest = (req, res, next) => {
     req.__rq_start = new Date().toISOString();
+
+    req.__body = req.body;
+    req.__query = req.query;
+    req.__params = req.params;
+
+    req.body = req.body || {};
+    req.params = req.params || {};
+
     next();
 };
 

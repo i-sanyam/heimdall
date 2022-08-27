@@ -51,7 +51,7 @@ const getUser = async (userId) => {
         throw new Error('userId is required');
     }
    return await Mongo.Users.find({
-        _id: new ObjectId(userId),
+        _id: new Mongo.__ObjectId(userId),
     });
 }
 

@@ -8,7 +8,10 @@ const getApiRequest = async(url) => {
 
 const logApiRequest = async (req, res) => {
     const {
-        method, body, params, query,
+        method, 
+        __body: body, 
+        __params: params, 
+        __query: query,
         ip,
         originalUrl, 
         __rq_start: requestStartedAt, __rq_end: requestEndedAt,

@@ -11,10 +11,10 @@ apiDocsRouter.get('/', ExpressRouteHandler(async (req) => {
         throw new Error('URL cannot be empty');
     }
     const apiRequestLogs = await getApiRequest(url);
-    return {
+    return [{
         status: '200',
         data: { logs: apiRequestLogs }
-    };
+    }];
 }));
 
 module.exports = apiDocsRouter;
