@@ -1,0 +1,6 @@
+{
+    "MONGODB_DEFAULT": {
+        "URI": "",
+        "DBNAME": ""
+    }
+}
