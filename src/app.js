@@ -7,6 +7,7 @@ app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
+app.use(require('./utils/logging').logAndHandleExpressErrors);
 
 global.MONGODB_CONNECTOR = null;
 (async () => {

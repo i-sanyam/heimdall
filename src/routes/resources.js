@@ -9,24 +9,15 @@ const resourceService = require('../service/resources');
 resourceRouter.use(userMiddleware.verifyUser);
 
 resourceRouter.get('/type', async (req, res) => {
-    try {
-        const supportedResourceTypes = Object.keys(constants.resourceTypesEnum);
+    const supportedResourceTypes = Object.keys(constants.resourceTypesEnum);
         return sendApiResponse(res, {
             status: 200,
             message: 'OK',
             data: { types: supportedResourceTypes },
-        });
-    } catch (e) {
-        return sendApiResponse(res, {
-            status: 400,
-            message: 'Error',
-            data: { err }
-        });
-    }
+    });
 });
 
 resourceRouter.get('/', async (req, res) => {
-    const userData = req.userData;
     const allResources = await resourceService.getResources();
     return sendApiResponse(res, {
         status: 200,
