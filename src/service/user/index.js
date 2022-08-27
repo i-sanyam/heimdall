@@ -1,4 +1,4 @@
-const { ObjectId } = require('mongodb');
+'use strict';
 
 const jwtService = require('../jwt');
 const Mongo = require('../../mongo');

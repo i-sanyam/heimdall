@@ -1,7 +1,6 @@
 'use strict';
 
 const Mongo = require('../../mongo');
-const { ObjectId } = require('mongodb');
 
 const addUserRequest = async (userId, resourceId) => {
     return await Mongo.Requests.insertOne({
@@ -12,18 +11,18 @@ const addUserRequest = async (userId, resourceId) => {
 
 const getUserRequests = async (userId, resourceId) => {
     const findParams = {
-        requestRaisedBy: ObjectId(userId),
+        requestRaisedBy: new Mongo.__ObjectId(userId),
     };
     if (resourceId) {
         findParams.resourceId = new Mongo.__ObjectId(resourceId);
     }
-    return await Mongo.Requests.find({findParams});
+    return await Mongo.Requests.find(findParams);
 };
 
 const getUserRequestById = async (userId, requestId) => {
     return await Mongo.Requests.find({
-        _id: Mongo.__ObjectId(requestId),
-        requestRaisedBy: Mongo.__ObjectId(userId),
+        _id: new Mongo.__ObjectId(requestId),
+        requestRaisedBy: new Mongo.__ObjectId(userId),
     });
 };
 

@@ -1,3 +1,5 @@
+'use strict';
+
 const requestRouter = require('express').Router();
 const _ = require('underscore');
 
@@ -11,8 +13,8 @@ const resourceService = require('../service/resources');
 requestRouter.use(userMiddleware.verifyUser);
 
 requestRouter.get('/', ExpressRouteHandler(async (req) => {
-  const userDetails = req.userData;
-  const requests = await requestService.getUserRequests(userDetails._id.toString());
+  const userId = req.userData._id.toString();
+  const requests = await requestService.getUserRequests(userId);
   return [{ data: { requests } }];
 }));
 
@@ -27,13 +29,14 @@ requestRouter.post('/', ExpressRouteHandler(async (req) => {
     return [{ status: 404, message: 'Invaid Resource Id' }];
   }
 
-  const userDetails = req.userData;
-  const existingUserRequests = await requestService.getUserRequests(userDetails._id.toString(), resourceId);
+  const userId = req.userData._id.toString();
+
+  const existingUserRequests = await requestService.getUserRequests(userId, resourceId);
   if (!_.isEmpty(existingUserRequests)) {
     return [{ status: 409, message: 'Request Already Raised' }];
   }
-
-  await requestService.addUserRequest(userDetails._id.toString(), resourceId);
+  
+  await requestService.addUserRequest(userId, resourceId);
   return;
 }));
 
