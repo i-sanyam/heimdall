@@ -2,13 +2,13 @@
 
 const Mongo = require('../mongo');
 
-const getApiRequest = async(params) => {
-
+const getApiRequest = async(url) => {
+    return await Mongo.ApiLogs.find({url});
 };
 
 const logApiRequest = async (req, res) => {
     const {
-        method, body, params,
+        method, body, params, query,
         ip,
         originalUrl, 
         __rq_start: requestStartedAt, __rq_end: requestEndedAt,
@@ -20,6 +20,7 @@ const logApiRequest = async (req, res) => {
         request: {
             body,
             params,
+            query,
         },
         response: res,
         requestStartedAt,
