@@ -1,4 +1,4 @@
-const userJWTService = require('../service/user/jwt');
+const jwtService = require('../service/jwt');
 const userService = require('../service/user');
 const { sendApiResponse } = require('../utils/responses');
 
@@ -11,7 +11,7 @@ const verifyUser = async (req, res, next) => {
     }
 
     try {
-        const { data: userData } = await userJWTService.verifyJWT(req.cookies.access_token);
+        const { data: userData } = await jwtService.verifyJWT(req.cookies.access_token);
         const savedUserData = await userService.getUser(userData.id);
         if (!savedUserData || savedUserData.length === 0) {
             throw new Error('User not found');

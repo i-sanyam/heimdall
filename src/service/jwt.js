@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_CONFIG = require('../../config.json').JWT;
-const logging = require('../../utils/logging');
+const JWT_CONFIG = require('../config.json').JWT;
+const logging = require('../utils/logging');
 
 const generateJWT = async (data) => {
     return new Promise( (resolve, reject) => {

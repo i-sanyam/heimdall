@@ -25,6 +25,7 @@ resourceRouter.get('/type', async (req, res) => {
 });
 
 resourceRouter.get('/', async (req, res) => {
+    const userData = req.userData;
     
 });
 

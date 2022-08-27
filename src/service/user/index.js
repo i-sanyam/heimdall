@@ -1,6 +1,6 @@
 const { ObjectId } = require('mongodb');
 
-const jwtService = require('./jwt');
+const jwtService = require('../jwt');
 const Mongo = require('../../mongo');
 
 const GITHUB_OAUTH_TYPE = "GITHUB";
