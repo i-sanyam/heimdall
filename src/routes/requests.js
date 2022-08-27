@@ -13,51 +13,50 @@ const resourceService = require('../service/resources');
 requestRouter.use(userMiddleware.verifyUser);
 
 requestRouter.get('/', ExpressRouteHandler(async (req) => {
-  const userId = req.userData._id.toString();
-  const requests = await requestService.getUserRequests(userId);
-  return [{ data: { requests } }];
+	const userId = req.userData._id.toString();
+	const requests = await requestService.getUserRequests(userId);
+	return [{ data: { requests } }];
 }));
 
 requestRouter.post('/', ExpressRouteHandler(async (req) => {
-  const resourceId = req.body.resourceId;
-  if (!resourceId) {
-    return [{ status: 400, message: 'Resource Id not present' }]
-  }
+	const resourceId = req.body.resourceId;
+	if (!resourceId) {
+		return [{ status: 400, message: 'Resource Id not present' }]
+	}
 
-  const resourceData = await resourceService.getResourceById(resourceId);
-  if (_.isEmpty(resourceData)) {
-    return [{ status: 404, message: 'Invaid Resource Id' }];
-  }
+	const resourceData = await resourceService.getResourceById(resourceId);
+	if (_.isEmpty(resourceData)) {
+		return [{ status: 404, message: 'Invaid Resource Id' }];
+	}
 
-  const userId = req.userData._id.toString();
+	const userId = req.userData._id.toString();
+	const existingUserRequests = await requestService.getUserRequests(userId, constants.requestStatusesEnum.OPEN, resourceId);
+	if (!_.isEmpty(existingUserRequests)) {
+		return [{ status: 409, message: 'Request Already Raised' }];
+	}
 
-  const existingUserRequests = await requestService.getUserRequests(userId, constants.requestStatusesEnum.OPEN, resourceId);
-  if (!_.isEmpty(existingUserRequests)) {
-    return [{ status: 409, message: 'Request Already Raised' }];
-  }
-  
-  await requestService.addUserRequest(userId, resourceId);
-  return;
+	await requestService.addUserRequest(userId, resourceId);
+	return;
 }));
 
 requestRouter.delete('/', ExpressRouteHandler(async (req) => {
-  const userId = req.userData._id.toString();
-  const requestId = req.body.requestId;
-  if (!requestId) {
-    return [{ status: 400, message: 'Request Id not present' }]
-  }
+	const userId = req.userData._id.toString();
+	const requestId = req.body.requestId;
+	if (!requestId) {
+		return [{ status: 400, message: 'Request Id not present' }]
+	}
 
-  const existingUserRequests = await requestService.getUserRequestById({ userId, requestId });
-  if (_.isEmpty(existingUserRequests)) {
-    return [{ status: 404, message: 'Request Not Found' }];
-  }
-  const existingUserRequest = existingUserRequests[0];
-
-  if (existingUserRequest.status !== constants.requestStatusesEnum.OPEN) {
-    return [{ status: 405, message: 'Invalid Request Status for deletion' }];
-  }
-  await requestService.deleteRequestById({ userId, requestId });
-  return;
+	const existingUserRequests = await requestService.getUserRequestById({ userId, requestId });
+	if (_.isEmpty(existingUserRequests)) {
+		return [{ status: 404, message: 'Request Not Found' }];
+	}
+	const existingUserRequest = existingUserRequests[0];
+	if (existingUserRequest.status !== constants.requestStatusesEnum.OPEN) {
+		return [{ status: 405, message: 'Invalid Request Status for deletion' }];
+	}
+	
+	await requestService.deleteRequestById({ userId, requestId });
+	return;
 }));
 
 module.exports = requestRouter;
