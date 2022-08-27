@@ -7,7 +7,6 @@ app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors());
-app.use(require('./utils/logging').logAndHandleExpressErrors);
 
 global.MONGODB_CONNECTOR = null;
 (async () => {
@@ -19,6 +18,7 @@ global.MONGODB_CONNECTOR = null;
   app.get('/', (req, res) => {
     return res.send('Welcome to Heimdall - Open Source Access Management.');
   });
+  app.use(require('./utils/logging').logAndHandleExpressErrors);
 
   app.listen(3000, () => {
     console.log(`Server started on localhost:3000`);

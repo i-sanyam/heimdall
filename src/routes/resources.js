@@ -10,10 +10,10 @@ resourceRouter.use(userMiddleware.verifyUser);
 
 resourceRouter.get('/type', async (req, res) => {
     const supportedResourceTypes = Object.keys(constants.resourceTypesEnum);
-        return sendApiResponse(res, {
-            status: 200,
-            message: 'OK',
-            data: { types: supportedResourceTypes },
+    return sendApiResponse(res, {
+        status: 200,
+        message: 'OK',
+        data: { types: supportedResourceTypes },
     });
 });
 

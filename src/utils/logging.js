@@ -1,4 +1,5 @@
 'use strict';
+const { sendApiResponse } = require('./responses');
 
 const LOGGING_ENABLED = true;
 
@@ -18,9 +19,11 @@ const log = (preMessage, log) => {
 
 const logAndHandleExpressErrors = (err, req, res, next) => {
     log('API_ERROR', err);
-    res.status(500)
-    res.render('error', { error: err });
-    return;
+    return sendApiResponse(res, {
+        status: 500,
+        message: 'Something Went Wrong',
+        err,
+    });
 };
 
 module.exports = { 
