@@ -5,6 +5,7 @@ const constants = require('../utils/constants');
 const userMiddleware = require('../middlewares/user');
 const { sendApiResponse } = require('../utils/responses');
 const resourceService = require('../service/resources');
+const ExpressRouteHandler = require('./routeHandler');
 
 resourceRouter.use(userMiddleware.verifyUser);
 
@@ -25,6 +26,15 @@ resourceRouter.get('/', async (req, res) => {
         data: { resources: allResources },
     });
 });
+
+resourceRouter.get('/e', ExpressRouteHandler(async (req) => {
+    const allResources = await resourceService.getResources();
+    return {
+        status: 200,
+        message: 'OK',
+        data: { resources: allResources },
+    };
+}));
 
 // resourceRouter.get('/', async (req, res) => {
 //     try {

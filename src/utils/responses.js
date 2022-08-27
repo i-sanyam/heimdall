@@ -25,7 +25,7 @@ const sendApiResponse = (res, params = {}, options = {}) => {
     }
 
     res.status(status).json(jsonResponse);
-    return;
+    return jsonResponse;
 };
 
 module.exports = { sendApiResponse };
