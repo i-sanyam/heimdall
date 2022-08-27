@@ -58,7 +58,7 @@ oAuthRouter.get('/callback', async (req, res) => {
     const userData = await requestUserData(accessToken);
     const cookie = await validateUserAndGetCookie('GITHUB', userData);
     res.cookie('access_token', cookie);
-    return res.redirect('/api/user/');
+    return res.redirect('/api/resource');
 });
 
 oAuthRouter.get('/login', (req, res) => {

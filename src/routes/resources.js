@@ -4,6 +4,7 @@ const _ = require('underscore');
 const constants = require('../utils/constants');
 const userMiddleware = require('../middlewares/user');
 const { sendApiResponse } = require('../utils/responses');
+const resourceService = require('../service/resources');
 
 resourceRouter.use(userMiddleware.verifyUser);
 
@@ -26,7 +27,12 @@ resourceRouter.get('/type', async (req, res) => {
 
 resourceRouter.get('/', async (req, res) => {
     const userData = req.userData;
-    
+    const allResources = await resourceService.getResources();
+    return sendApiResponse(res, {
+        status: 200,
+        message: 'OK',
+        data: { resources: allResources },
+    });
 });
 
 // resourceRouter.get('/', async (req, res) => {
