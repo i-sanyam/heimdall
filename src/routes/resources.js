@@ -18,15 +18,15 @@ resourceRouter.get('/type', ExpressRouteHandler(async () => {
 resourceRouter.get('/', ExpressRouteHandler(async (req) => {
     const userDetails = req.userData;
 
-    const userRoles = userDetails.userResourceGroupsArray;
-    if (!userRoles || !Array.isArray(userRoles) || userRoles.length === 0) {
+    const userGroupIds = userDetails.userResourceGroupsArray;
+    if (!userGroupIds || !Array.isArray(userGroupIds) || userGroupIds.length === 0) {
         return [{
             status: 403,
             message: 'No User Groups found'
         }];
     }
 
-    const allResources = await resourceService.getResourcesByRoleIds(userRoles);
+    const allResources = await resourceService.getResourcesByResourceGroupIds(userGroupIds);
     return [{ data: { resources: allResources } }];
 }));
 
