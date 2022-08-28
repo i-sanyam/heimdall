@@ -1,6 +1,6 @@
 'use strict';
 
-const requestRouter = require('express').Router();
+const userRequestsRouter = require('express').Router();
 const _ = require('underscore');
 
 const constants = require('../utils/constants');
@@ -10,15 +10,15 @@ const ExpressRouteHandler = require('./routeHandler');
 const requestService = require('../service/requests');
 const resourceService = require('../service/resources');
 
-requestRouter.use(userMiddleware.verifyUser);
+userRequestsRouter.use(userMiddleware.verifyUser);
 
-requestRouter.get('/', ExpressRouteHandler(async (req) => {
+userRequestsRouter.get('/', ExpressRouteHandler(async (req) => {
 	const userId = req.userData._id.toString();
 	const requests = await requestService.getUserRequests(userId);
 	return [{ data: { requests } }];
 }));
 
-requestRouter.post('/', ExpressRouteHandler(async (req) => {
+userRequestsRouter.post('/', ExpressRouteHandler(async (req) => {
 	const resourceId = req.body.resourceId;
 	if (!resourceId) {
 		return [{ status: 400, message: 'Resource Id not present' }]
@@ -39,7 +39,7 @@ requestRouter.post('/', ExpressRouteHandler(async (req) => {
 	return;
 }));
 
-requestRouter.delete('/', ExpressRouteHandler(async (req) => {
+userRequestsRouter.delete('/', ExpressRouteHandler(async (req) => {
 	const userId = req.userData._id.toString();
 	const requestId = req.body.requestId;
 	if (!requestId) {
@@ -59,4 +59,4 @@ requestRouter.delete('/', ExpressRouteHandler(async (req) => {
 	return;
 }));
 
-module.exports = requestRouter;
+module.exports = userRequestsRouter;
