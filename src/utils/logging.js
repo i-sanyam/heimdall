@@ -30,7 +30,7 @@ const logAndHandleExpressErrors = (err, req, res, next) => {
 };
 
 const startLogApiRequest = (req, res, next) => {
-    req.__rq_start = new Date().toISOString();
+    req.__rq_start = new Date();
 
     req.__body = req.body;
     req.__query = req.query;
@@ -43,7 +43,7 @@ const startLogApiRequest = (req, res, next) => {
 };
 
 const endLogApiRequest = (req, res, next) => {
-    req.__rq_end = new Date().toISOString();
+    req.__rq_end = new Date();
     if (LOGGING_ENABLED) {
         logApiRequest(req, res);
     }

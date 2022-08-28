@@ -9,17 +9,17 @@ class BaseMongoCollection {
         return await this._collection.find(filter, options).toArray();
     }
     async insertOne(doc, options) {
-        doc.createdAt = new Date().toISOString();
+        doc.createdAt = new Date();
         return await this._collection.insertOne(doc, options);
     }
     async updateOne(filter, update, options) {
         update.$set = {
             ...(update.$set || {}),
-            updatedAt: new Date().toISOString(),
+            updatedAt: new Date(),
         };
         update.$setOnInsert = {
             ...(update.$setOnInsert || {}),
-            createdAt: new Date().toISOString(),
+            createdAt: new Date(),
         };
         return await this._collection.updateOne(filter, update, options);
     }

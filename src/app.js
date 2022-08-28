@@ -24,7 +24,7 @@ global.MONGODB_CONNECTOR = null;
     return res.send('Welcome to Heimdall - Open Source Access Management.');
   });
   app.use(logging.logAndHandleExpressErrors);
-  const PORT = process.NODE_ENV.PORT || 3000;
+  const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server started on localhost:${PORT}`);
   });
