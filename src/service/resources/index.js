@@ -14,8 +14,18 @@ const getResourceById = async (resourceId) => {
     });
 }
 
+const hasResourceGroupAccess = (accessResourceGroups, resourceGroupsToCheck) => {
+    for (const accessResourceGroup of accessResourceGroups) {
+        if (resourceGroupsToCheck.includes(accessResourceGroup)) {
+            return true;
+        }
+    }
+    return false;
+};
+
 
 module.exports = {
     getResourceById,
     getResourcesByResourceGroupIds,
+    hasResourceGroupAccess,
 };

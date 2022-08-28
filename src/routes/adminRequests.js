@@ -15,8 +15,7 @@ adminRequestsRouter.use(userMiddleware.verifyUser);
 adminRequestsRouter.use(adminMiddleware.verifyAdmin);
 
 adminRequestsRouter.get('/', ExpressRouteHandler(async (req) => {
-    const userDetails = req.userData;
-    const adminGroupIds = userDetails.adminResourceGroupsArray;
+    const adminGroupIds = req.userData.adminResourceGroupsArray;
 
 	const requests = await requestService.getRequestsByResourceGroupIds(adminGroupIds);
 	return [{ data: { requests } }];
@@ -29,13 +28,22 @@ adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
 	}
 
     // TODO: need transaction here
-	const existingUserRequests = await requestService.getUserRequestByIdWithAdminRoleId({
-		requestId
+	const existingUserRequests = await requestService.getUserRequestByIdWithResourceGroupIds({
+		requestIdsArray: [ requestId ],
 	});
-	if (_.isEmpty(existingUserRequests)) {
+	if (!existingUserRequests || !Array.isArray(existingUserRequests) || existingUserRequests.length === 0) {
 		return [{ status: 404, message: 'Request Not Found' }];
 	}
 	const existingUserRequest = existingUserRequests[0];
+
+	const resourceGroups = existingUserRequest.resourceDetails.resourceGroupsArray;
+	const adminGroupIds = req.userData.adminResourceGroupsArray;
+	const hasAdminAccess = resourceService.hasResourceGroupAccess(adminGroupIds, resourceGroups);
+
+	if (!hasAdminAccess) {
+		return [{ status: 401, message: 'You need admin access for resource' }];
+	}
+
 	if (existingUserRequest.status !== constants.requestStatusesEnum.OPEN) {
 		return [{ status: 405, message: 'Invalid Request Status for Rejection' }];
 	}
