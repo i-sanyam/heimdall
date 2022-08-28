@@ -1,106 +1,101 @@
-const express = require('express');
-const router = express.Router();
-const constants = require('../utils/constants');
-const { executeQuery } = require('../startup/mysql');
+'use strict';
+
+const adminRequestsRouter = require('express').Router();
 const _ = require('underscore');
 
-router.use((req, res, next) => {
-    // write endpoint protection here
-    req.adminDetails = {
-        adminId: 1,
-    };
-    next();
-});
+const constants = require('../utils/constants');
+const userMiddleware = require('../middlewares/user');
+const ExpressRouteHandler = require('./routeHandler');
 
-router.get('/', async (req, res) => {
-    try {
-        const adminDetails = req.adminDetails;
-        const employeeRequestsQuery = `
-            SELECT rr.request_id, r.name, rr.status 
-            FROM resource_requests rr JOIN resources r ON r.resource_id = rr.resource_id
-        `;
-        console.log(employeeRequestsQuery);
-        const data = await executeQuery(employeeRequestsQuery);
-        for (const element of data) {
-            element.resource_type_name = 'GITHUB';
-            element.status = constants.requestStatusReverse[element.status] || { name: 'Request Access', color: 'primary', action: 'put' };
-        }
-        return res.send(JSON.stringify(data));
-    } catch (e) {
-      return res.status(400);
+const requestService = require('../service/requests');
+const resourceService = require('../service/resources');
+
+adminRequestsRouter.use(userMiddleware.verifyUser);
+
+adminRequestsRouter.get('/', ExpressRouteHandler(async (req) => {
+    const userDetails = req.userData;
+
+    const adminRoles = userDetails.adminResourceGroupsArray;
+    if (!adminRoles || !Array.isArray(adminRoles) || adminRoles.length === 0) {
+        return [{
+            status: 401,
+            message: 'Unauthorized'
+        }];
     }
-});
+	const requests = await requestService.getRequestsByResourceGroupIds(adminRoles);
+	return [{ data: { requests } }];
+}));
 
-router.post('/approve', async (req, res) => {
-    const requestId = req.body.requestId;
-    console.log(requestId);
-    // const resourceId = req.body.resourceId;
-    // const resourceData = await executeQuery('SELECT 1 FROM resources WHERE resource_id = ?', [ resourceId ]);
-    // if (_.isEmpty(resourceData)) {
-    //     return res.status(404).send('Resource Id Not Present');
-    // }
-    const requestData = await executeQuery(`
-    SELECT r.name as resourceName FROM resource_requests rr 
-        JOIN resources r 
-            ON r.resource_id = rr.resource_id
-        WHERE rr.request_id = ? AND rr.status = ?`, [ requestId, constants.requestStatus.OPEN ]);
+adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
+	const requestId = req.body.requestId;
+	if (!requestId) {
+		return [{ status: 400, message: 'Request Id not present' }]
+	}
 
-    if (_.isEmpty(requestData)) {
-        return res.send("REQUEST NOT FOUND");
-    }
+	const existingUserRequests = await requestService.getUserRequestById({ userId, requestId });
+	if (_.isEmpty(existingUserRequests)) {
+		return [{ status: 404, message: 'Request Not Found' }];
+	}
+	const existingUserRequest = existingUserRequests[0];
+	if (existingUserRequest.status !== constants.requestStatusesEnum.OPEN) {
+		return [{ status: 405, message: 'Invalid Request Status for Rejection' }];
+	}
+	
+	await requestService.rejectRequestById({
+        userId: existingUserRequest.requestRaisedBy,
+        requestId
+    });
+	return;
+}));
 
-    const resourceTypeName = 'github';
+module.exports = adminRequestsRouter;
 
-    const fileToRequire = require(`../resource_types/${resourceTypeName}`);
-    // fileToRequire.prerequisite();
-    fileToRequire.actions.addAccess(requestData[0].resourceName, 'sanyam-aggarwal-shipsy');
+// router.post('/approve', async (req, res) => {
+//     const requestId = req.body.requestId;
+//     console.log(requestId);
+//     // const resourceId = req.body.resourceId;
+//     // const resourceData = await executeQuery('SELECT 1 FROM resources WHERE resource_id = ?', [ resourceId ]);
+//     // if (_.isEmpty(resourceData)) {
+//     //     return res.status(404).send('Resource Id Not Present');
+//     // }
+//     const requestData = await executeQuery(`
+//     SELECT r.name as resourceName FROM resource_requests rr 
+//         JOIN resources r 
+//             ON r.resource_id = rr.resource_id
+//         WHERE rr.request_id = ? AND rr.status = ?`, [ requestId, constants.requestStatus.OPEN ]);
 
-    await executeQuery('UPDATE resource_requests SET status = ? WHERE request_id = ?', [constants.requestStatus.APPROVED, requestId]);
-    res.send('ADD REQUESTS');
-});
+//     if (_.isEmpty(requestData)) {
+//         return res.send("REQUEST NOT FOUND");
+//     }
 
-router.post('/withdraw', async (req, res) => {
-    const requestId = req.body.requestId;
-    const requestData = await executeQuery(`
-    SELECT r.name as resourceName FROM resource_requests rr 
-        JOIN resources r 
-            ON r.resource_id = rr.resource_id
-        WHERE rr.request_id = ?`, [ requestId ]);
+//     const resourceTypeName = 'github';
 
-    if (_.isEmpty(requestData)) {
-        return res.send("REQUEST NOT FOUND");
-    }
+//     const fileToRequire = require(`../resource_types/${resourceTypeName}`);
+//     // fileToRequire.prerequisite();
+//     fileToRequire.actions.addAccess(requestData[0].resourceName, 'sanyam-aggarwal-shipsy');
 
-    const resourceTypeName = 'github';
+//     await executeQuery('UPDATE resource_requests SET status = ? WHERE request_id = ?', [constants.requestStatus.APPROVED, requestId]);
+//     res.send('ADD REQUESTS');
+// });
 
-    const fileToRequire = require(`../resource_types/${resourceTypeName}`);
-    // fileToRequire.prerequisite();
-    fileToRequire.actions.removeAccess(requestData[0].resourceName, 'sanyam-aggarwal-shipsy');
+// router.post('/withdraw', async (req, res) => {
+//     const requestId = req.body.requestId;
+//     const requestData = await executeQuery(`
+//     SELECT r.name as resourceName FROM resource_requests rr 
+//         JOIN resources r 
+//             ON r.resource_id = rr.resource_id
+//         WHERE rr.request_id = ?`, [ requestId ]);
 
-    await executeQuery('UPDATE resource_requests SET status = ? WHERE request_id = ?', [constants.requestStatus.DELETED, requestId]);
-    res.send('REMOVE REQUESTS');
-});
+//     if (_.isEmpty(requestData)) {
+//         return res.send("REQUEST NOT FOUND");
+//     }
 
-router.post('/reject', async (req, res) => {
-    const requestId = req.body.requestId;
-    const requestData = await executeQuery(`
-    SELECT r.name as resourceName FROM resource_requests rr 
-        JOIN resources r 
-            ON r.resource_id = rr.resource_id
-        WHERE rr.request_id = ?`, [ requestId ]);
+//     const resourceTypeName = 'github';
 
-    if (_.isEmpty(requestData)) {
-        return res.send("REQUEST NOT FOUND");
-    }
+//     const fileToRequire = require(`../resource_types/${resourceTypeName}`);
+//     // fileToRequire.prerequisite();
+//     fileToRequire.actions.removeAccess(requestData[0].resourceName, 'sanyam-aggarwal-shipsy');
 
-    const resourceTypeName = 'github';
-
-    // const fileToRequire = require(`../resource_types/${resourceTypeName}`);
-    // // fileToRequire.prerequisite();
-    // fileToRequire.actions.addAccess(requestData[0].resourceName, 'sanyam-aggarwal-shipsy');
-
-    await executeQuery('UPDATE resource_requests SET status = ? WHERE request_id = ?', [constants.requestStatus.REJECTED, requestId]);
-    res.send('REMOVE REQUESTS');
-});
-
-module.exports = router;
+//     await executeQuery('UPDATE resource_requests SET status = ? WHERE request_id = ?', [constants.requestStatus.DELETED, requestId]);
+//     res.send('REMOVE REQUESTS');
+// });
