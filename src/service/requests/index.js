@@ -39,26 +39,6 @@ const getUserRequestById = async (params, options) => {
     return await Mongo.Requests.find(findParams, options);
 };
 
-const getUserRequestByIdWithResourceGroupIds = async (params, options) => {
-    const { requestIdsArray } = params;
-    const pipeline = [
-        {
-            $match: { 
-                _id: { $in: requestIdsArray },
-            }
-        },
-        {
-            $lookup: {
-                "from": 'resources',
-                "localField": 'resourceId',
-                "foreignField": '_id',
-                "as": "resourceDetails"
-            },
-        },
-    ];
-    return await Mongo.Requests.aggregate(pipeline);
-};
-
 const deleteRequestById = async (params) => {
     const { userId, requestId } = params;
     return await Mongo.Requests.updateOne({
@@ -77,6 +57,26 @@ const rejectRequestById = async (params) => {
     }, {
         $set: { status: requestStatusesEnum.REJECTED },
     });
+};
+
+const getUserRequestByIdWithResourceGroupIds = async (params, options) => {
+    const { requestIdsArray } = params;
+    const pipeline = [
+        {
+            $match: { 
+                _id: { $in: requestIdsArray },
+            }
+        },
+        {
+            $lookup: {
+                "from": 'resources',
+                "localField": 'resourceId',
+                "foreignField": '_id',
+                "as": "resourceDetails"
+            },
+        },
+    ];
+    return await Mongo.Requests.aggregate(pipeline);
 };
 
 const getRequestsByResourceGroupIds = async (resourceGroupIds, status) => {
@@ -98,10 +98,42 @@ const getRequestsByResourceGroupIds = async (resourceGroupIds, status) => {
     return await Mongo.Requests.aggregate(pipeline);
 };
 
+const getRequestsWithResourceDetails = async (params, options) => {
+    const { requestIdsArray = [], resourceGroupIds = [], status } = params;
+
+    const lookup = {
+        from: 'resources',
+        localField: 'resourceId',
+        foreignField: '_id',
+        as: 'resourceDetails',
+    };
+
+    const requestMatch = {};
+    if (status) {
+        requestMatch.status = status;
+    }
+    if (requestIdsArray && requestIdsArray.length !== 0) {
+        requestMatch._id = { $in: requestIdsArray };
+    }
+
+    const resourceMatch = {};
+    if (resourceGroupIds && resourceGroupIds.length !== 0) {
+        resourceMatch['resourceDetails.resourceGroupsArray'] = { $in: resourceGroupIds };
+    }
+
+    const pipeline = [
+        { $match: requestMatch },
+        { $lookup: lookup },
+        { $match: resourceMatch },
+    ];
+    return await Mongo.Requests.aggregate(pipeline);
+};
+
 module.exports = {
     addUserRequest,
     deleteRequestById,
     getRequestsByResourceGroupIds,
+    getRequestsWithResourceDetails,
     getUserRequests,
     getUserRequestById,
     getUserRequestByIdWithResourceGroupIds,
