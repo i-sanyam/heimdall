@@ -1,7 +1,11 @@
 const Mongo = require('../../mongo');
 
-const getResources = async () => {
-    return await Mongo.Resources.find({});
+const getResourcesByRoleIds = async (roleIds) => {
+    return await Mongo.Resources.find({
+        resourceGroupsArray: {
+            $in: roleIds,
+        }
+    });
 };
 
 const getResourceById = async (resourceId) => {
@@ -13,5 +17,5 @@ const getResourceById = async (resourceId) => {
 
 module.exports = {
     getResourceById,
-    getResources,
+    getResourcesByRoleIds,
 };
