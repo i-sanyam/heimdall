@@ -59,45 +59,6 @@ const rejectRequestById = async (params) => {
     });
 };
 
-const getUserRequestByIdWithResourceGroupIds = async (params, options) => {
-    const { requestIdsArray } = params;
-    const pipeline = [
-        {
-            $match: { 
-                _id: { $in: requestIdsArray },
-            }
-        },
-        {
-            $lookup: {
-                "from": 'resources',
-                "localField": 'resourceId',
-                "foreignField": '_id',
-                "as": "resourceDetails"
-            },
-        },
-    ];
-    return await Mongo.Requests.aggregate(pipeline);
-};
-
-const getRequestsByResourceGroupIds = async (resourceGroupIds, status) => {
-    const pipeline = [
-        {
-            $lookup: {
-                "from": 'resources',
-                "localField": 'resourceId',
-                "foreignField": '_id',
-                "as": "resourceDetails"
-            },
-        },
-        {
-            $match: { 
-                'resourceDetails.resourceGroupsArray': { $in: resourceGroupIds }
-            },
-        }
-    ];
-    return await Mongo.Requests.aggregate(pipeline);
-};
-
 const getRequestsWithResourceDetails = async (params, options) => {
     const { requestIdsArray = [], resourceGroupIds = [], status } = params;
 
@@ -143,10 +104,8 @@ const getRequestsWithResourceDetails = async (params, options) => {
 module.exports = {
     addUserRequest,
     deleteRequestById,
-    getRequestsByResourceGroupIds,
     getRequestsWithResourceDetails,
     getUserRequests,
     getUserRequestById,
-    getUserRequestByIdWithResourceGroupIds,
     rejectRequestById,
 };
