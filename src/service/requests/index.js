@@ -49,9 +49,40 @@ const deleteRequestById = async (params) => {
     });
 };
 
+const rejectRequestById = async (params) => {
+    const { userId, requestId } = params;
+    return await Mongo.Requests.updateOne({
+        _id: new Mongo.__ObjectId(requestId),
+        requestRaisedBy: new Mongo.__ObjectId(userId),
+    }, {
+        $set: { status: requestStatusesEnum.REJECTED },
+    });
+};
+
+const getRequestsByResourceGroupIds = async (resourceGroupIds, status) => {
+    const pipeline = [
+        {
+            $lookup: {
+                "from": 'resources',
+                "localField": 'resourceId',
+                "foreignField": '_id',
+                "as": "resourceDetails"
+            },
+        },
+        {
+            $match: { 
+                'resourceDetails.resourceGroupsArray': { $in: resourceGroupIds }
+            },
+        }
+    ];
+    return await Mongo.Requests.aggregate(pipeline);
+};
+
 module.exports = {
     addUserRequest,
     deleteRequestById,
+    getRequestsByResourceGroupIds,
     getUserRequests,
     getUserRequestById,
+    rejectRequestById,
 };
