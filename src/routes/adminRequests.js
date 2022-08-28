@@ -4,6 +4,7 @@ const adminRequestsRouter = require('express').Router();
 const _ = require('underscore');
 
 const constants = require('../utils/constants');
+const adminMiddleware = require('../middlewares/admin');
 const userMiddleware = require('../middlewares/user');
 const ExpressRouteHandler = require('./routeHandler');
 
@@ -11,18 +12,13 @@ const requestService = require('../service/requests');
 const resourceService = require('../service/resources');
 
 adminRequestsRouter.use(userMiddleware.verifyUser);
+adminRequestsRouter.use(adminMiddleware.verifyAdmin);
 
 adminRequestsRouter.get('/', ExpressRouteHandler(async (req) => {
     const userDetails = req.userData;
+    const adminGroupIds = userDetails.adminResourceGroupsArray;
 
-    const adminRoles = userDetails.adminResourceGroupsArray;
-    if (!adminRoles || !Array.isArray(adminRoles) || adminRoles.length === 0) {
-        return [{
-            status: 401,
-            message: 'Unauthorized'
-        }];
-    }
-	const requests = await requestService.getRequestsByResourceGroupIds(adminRoles);
+	const requests = await requestService.getRequestsByResourceGroupIds(adminGroupIds);
 	return [{ data: { requests } }];
 }));
 
@@ -33,7 +29,9 @@ adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
 	}
 
     // TODO: need transaction here
-	const existingUserRequests = await requestService.getUserRequestById({ userId, requestId });
+	const existingUserRequests = await requestService.getUserRequestByIdWithAdminRoleId({
+		requestId
+	});
 	if (_.isEmpty(existingUserRequests)) {
 		return [{ status: 404, message: 'Request Not Found' }];
 	}
