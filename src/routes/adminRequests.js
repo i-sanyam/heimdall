@@ -17,7 +17,9 @@ adminRequestsRouter.use(adminMiddleware.verifyAdmin);
 adminRequestsRouter.get('/', ExpressRouteHandler(async (req) => {
     const adminGroupIds = req.userData.adminResourceGroupsArray;
 
-	const requests = await requestService.getRequestsByResourceGroupIds(adminGroupIds);
+	const requests = await requestService.getRequestsWithResourceDetails({
+		resourceGroupIds: adminGroupIds,
+	});
 	return [{ data: { requests } }];
 }));
 
@@ -28,17 +30,22 @@ adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
 	}
 
     // TODO: need transaction here
-	const existingUserRequests = await requestService.getUserRequestByIdWithResourceGroupIds({
+	const existingUserRequests = await requestService.getRequestsWithResourceDetails({
 		requestIdsArray: [ requestId ],
 	});
 	if (!existingUserRequests || !Array.isArray(existingUserRequests) || existingUserRequests.length === 0) {
 		return [{ status: 404, message: 'Request Not Found' }];
 	}
 	const existingUserRequest = existingUserRequests[0];
-
-	const resourceGroups = existingUserRequest.resourceDetails.resourceGroupsArray;
+	if (!existingUserRequest.resourceDetails || 
+		!Array.isArray(existingUserRequest.resourceDetails) || 
+		existingUserRequest.resourceDetails.length === 0) {
+		return [{ status: 404, message: 'Resource Attached With Request Not Found' }];
+	}
+	const requestedResourceDetails = existingUserRequest.resourceDetails[0];
+	const resourceGroupIds = requestedResourceDetails.resourceGroupsArray || [];
 	const adminGroupIds = req.userData.adminResourceGroupsArray;
-	const hasAdminAccess = resourceService.hasResourceGroupAccess(adminGroupIds, resourceGroups);
+	const hasAdminAccess = resourceService.hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
 
 	if (!hasAdminAccess) {
 		return [{ status: 401, message: 'You need admin access for resource' }];

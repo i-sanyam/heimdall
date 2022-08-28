@@ -15,8 +15,10 @@ const getResourceById = async (resourceId) => {
 }
 
 const hasResourceGroupAccess = (accessResourceGroups, resourceGroupsToCheck) => {
-    for (const accessResourceGroup of accessResourceGroups) {
-        if (resourceGroupsToCheck.includes(accessResourceGroup)) {
+    const sanitizedAccessResourceGroups = accessResourceGroups.map(Mongo.__stringifyObjectId);
+    const sanitizedResourceGroupsToCheck = resourceGroupsToCheck.map(Mongo.__stringifyObjectId);
+    for (const accessResourceGroup of sanitizedAccessResourceGroups) {
+        if (sanitizedResourceGroupsToCheck.includes(accessResourceGroup)) {
             return true;
         }
     }

@@ -113,19 +113,30 @@ const getRequestsWithResourceDetails = async (params, options) => {
         requestMatch.status = status;
     }
     if (requestIdsArray && requestIdsArray.length !== 0) {
-        requestMatch._id = { $in: requestIdsArray };
+        requestMatch._id = { 
+            $in: requestIdsArray.map((requestId) => {
+                return new Mongo.__ObjectId(requestId);
+            }),
+        };
     }
 
     const resourceMatch = {};
     if (resourceGroupIds && resourceGroupIds.length !== 0) {
-        resourceMatch['resourceDetails.resourceGroupsArray'] = { $in: resourceGroupIds };
+        resourceMatch['resourceDetails.resourceGroupsArray'] = {
+            $in: resourceGroupIds.map((resourceGroupId) => {
+                return new Mongo.__ObjectId(resourceGroupId);
+            }),
+        };
     }
 
-    const pipeline = [
-        { $match: requestMatch },
-        { $lookup: lookup },
-        { $match: resourceMatch },
-    ];
+    const pipeline = [{ $lookup: lookup }];
+
+    if (Object.keys(requestMatch).length !== 0) {
+        pipeline.unshift({ $match: requestMatch });
+    }
+    if (Object.keys(resourceMatch).length !== 0) {
+        pipeline.push({ $match: resourceMatch });
+    }
     return await Mongo.Requests.aggregate(pipeline);
 };
 
