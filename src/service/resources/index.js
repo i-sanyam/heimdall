@@ -1,7 +1,11 @@
 const Mongo = require('../../mongo');
 
-const getResources = async () => {
-    return await Mongo.Resources.find({});
+const getResourcesByResourceGroupIds = async (resourceGroupIds) => {
+    return await Mongo.Resources.find({
+        resourceGroupsArray: {
+            $in: resourceGroupIds,
+        }
+    });
 };
 
 const getResourceById = async (resourceId) => {
@@ -10,8 +14,20 @@ const getResourceById = async (resourceId) => {
     });
 }
 
+const hasResourceGroupAccess = (accessResourceGroups, resourceGroupsToCheck) => {
+    const sanitizedAccessResourceGroups = accessResourceGroups.map(Mongo.__stringifyObjectId);
+    const sanitizedResourceGroupsToCheck = resourceGroupsToCheck.map(Mongo.__stringifyObjectId);
+    for (const accessResourceGroup of sanitizedAccessResourceGroups) {
+        if (sanitizedResourceGroupsToCheck.includes(accessResourceGroup)) {
+            return true;
+        }
+    }
+    return false;
+};
+
 
 module.exports = {
     getResourceById,
-    getResources,
+    getResourcesByResourceGroupIds,
+    hasResourceGroupAccess,
 };

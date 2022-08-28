@@ -4,10 +4,7 @@ const { sendApiResponse } = require('../utils/responses');
 
 const verifyUser = async (req, res, next) => {
     if (!req.cookies?.access_token || req.cookies.access_token.length == 0) {
-        return sendApiResponse(res, {
-            status: 200,
-            message: 'You are not logged in'
-        });
+        return sendApiResponse(res, { status: 401, message: 'You are not logged in' });
     }
 
     try {
