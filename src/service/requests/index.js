@@ -24,7 +24,7 @@ const getUserRequests = async (userId, status, resourceId) => {
     return await Mongo.Requests.find(findParams);
 };
 
-const getUserRequestById = async (params) => {
+const getUserRequestById = async (params, options) => {
     const { userId, requestId, status, resourceId } = params;
     const findParams = {
         _id: new Mongo.__ObjectId(requestId),
@@ -36,7 +36,7 @@ const getUserRequestById = async (params) => {
     if (resourceId) {
         findParams.resourceId = new Mongo.__ObjectId(resourceId);
     }
-    return await Mongo.Requests.find(findParams);
+    return await Mongo.Requests.find(findParams, options);
 };
 
 const deleteRequestById = async (params) => {

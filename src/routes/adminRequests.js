@@ -32,6 +32,7 @@ adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
 		return [{ status: 400, message: 'Request Id not present' }]
 	}
 
+    // TODO: need transaction here
 	const existingUserRequests = await requestService.getUserRequestById({ userId, requestId });
 	if (_.isEmpty(existingUserRequests)) {
 		return [{ status: 404, message: 'Request Not Found' }];
