@@ -37,11 +37,7 @@ adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
 		return [{ status: 404, message: 'Request Not Found' }];
 	}
 	const existingUserRequest = existingUserRequests[0];
-	if (!existingUserRequest.resourceDetails || 
-		!Array.isArray(existingUserRequest.resourceDetails) || 
-		existingUserRequest.resourceDetails.length === 0) {
-		return [{ status: 404, message: 'Resource Attached With Request Not Found' }];
-	}
+	
 	const requestedResourceDetails = existingUserRequest.resourceDetails[0];
 	const resourceGroupIds = requestedResourceDetails.resourceGroupsArray || [];
 	const adminGroupIds = req.userData.adminResourceGroupsArray;

@@ -98,7 +98,15 @@ const getRequestsWithResourceDetails = async (params, options) => {
     if (Object.keys(resourceMatch).length !== 0) {
         pipeline.push({ $match: resourceMatch });
     }
-    return await Mongo.Requests.aggregate(pipeline);
+    const requests = await Mongo.Requests.aggregate(pipeline);
+    for (const request of requests) {
+        if (!request.resourceDetails || 
+            !Array.isArray(request.resourceDetails) || 
+            request.resourceDetails.length === 0) {
+            throw new Error('Resource Attached With Request Not Found');
+        }
+    }
+    return requests;
 };
 
 module.exports = {
