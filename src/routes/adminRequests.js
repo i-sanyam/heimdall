@@ -10,6 +10,7 @@ const ExpressRouteHandler = require('./routeHandler');
 
 const requestService = require('../service/requests');
 const resourceService = require('../service/resources');
+const resourceTypeHandler = require('../resource_types');
 
 adminRequestsRouter.use(userMiddleware.verifyUser);
 adminRequestsRouter.use(adminMiddleware.verifyAdmin);
@@ -37,7 +38,7 @@ adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
 		return [{ status: 404, message: 'Request Not Found' }];
 	}
 	const existingUserRequest = existingUserRequests[0];
-	
+
 	const requestedResourceDetails = existingUserRequest.resourceDetails[0];
 	const resourceGroupIds = requestedResourceDetails.resourceGroupsArray || [];
 	const adminGroupIds = req.userData.adminResourceGroupsArray;
@@ -55,6 +56,41 @@ adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
         userId: existingUserRequest.requestRaisedBy,
         requestId
     });
+	return;
+}));
+
+adminRequestsRouter.post('/approve', ExpressRouteHandler(async (req) => {
+	const requestId = req.body.requestId;
+	if (!requestId) {
+		return [{ status: 400, message: 'Request Id not present' }]
+	}
+
+    // TODO: need transaction here
+	const existingUserRequests = await requestService.getRequestsWithResourceDetails({
+		requestIdsArray: [ requestId ],
+	});
+	if (!existingUserRequests || !Array.isArray(existingUserRequests) || existingUserRequests.length === 0) {
+		return [{ status: 404, message: 'Request Not Found' }];
+	}
+	const existingUserRequest = existingUserRequests[0];
+	
+	const requestedResourceDetails = existingUserRequest.resourceDetails[0];
+	const resourceGroupIds = requestedResourceDetails.resourceGroupsArray || [];
+	const adminGroupIds = req.userData.adminResourceGroupsArray;
+	const hasAdminAccess = resourceService.hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
+
+	if (!hasAdminAccess) {
+		return [{ status: 401, message: 'You need admin access for resource' }];
+	}
+
+	if (existingUserRequest.status !== constants.requestStatusesEnum.OPEN) {
+		return [{ status: 405, message: 'Invalid Request Status for Rejection' }];
+	}
+
+	const resourceType = existingUserRequest.resourceDetails[0].type;
+	const handlerForResourceType = resourceTypeHandler[resourceType];
+	req.userData;
+	const a = await handlerForResourceType.prerequisite('i-sanyam');
 	return;
 }));
 
