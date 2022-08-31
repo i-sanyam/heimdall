@@ -29,38 +29,56 @@ class GithubResourceHandler extends BaseResourceHandler {
 
     static async checkAccess(repositoryPath, username) {
         // repositoryPath = 'owner/repo-name'
-        const data = await axios({
-            method: 'GET',
-            url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,
-            headers: {
-                "Authorization": `token ${GITHUBCONFIG.TOKEN}`,
-            },
-        });
-        if (data.status === 204) {
-            return true;
-        }
-        return false;
+        try {
+            const data = await axios({
+                method: 'GET',
+                url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,
+                headers: {
+                    "Authorization": `token ${GITHUBCONFIG.TOKEN}`,
+                },
+            })
+            if (data.status === 204) {
+                return true;
+            }
+            return false;
+        } catch(e) {
+            if (e.response && e.response.status === 404) {
+                return false;
+            }
+            throw e;
+        };
     }
 
     static async addAccess(repositoryPath, username) {
-        const { data } = await axios({
+        const data = await axios({
             method: 'PUT',
             url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,
             headers: {
                 "Authorization": `token ${GITHUBCONFIG.TOKEN}`,
             }
         });
-        console.log(data);
+        if (data.status === 201 || data.status === 204) {
+            return true;
+        }
+        throw new Error('Unable to add collaborator');
     }
 
     static async removeAccess(repositoryPath, username) {
-        const { data } = await axios({
-            method: 'DELETE',
-            url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,
-            headers: {
-                "Authorization": GITHUBCONFIG.TOKEN,
+        try {
+            const data = await axios({
+                method: 'DELETE',
+                url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,
+                headers: {
+                    "Authorization": `token ${GITHUBCONFIG.TOKEN}`,
+                }
+            });
+            if (data.status === 204) {
+                return true;
             }
-        });
+            throw new Error('Unable to remove collaborator');
+        } catch (e) {
+            throw e;
+        }
     }
 };
 
