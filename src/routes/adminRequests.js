@@ -87,10 +87,8 @@ adminRequestsRouter.post('/approve', ExpressRouteHandler(async (req) => {
 		return [{ status: 405, message: 'Invalid Request Status for Rejection' }];
 	}
 
-	const resourceType = existingUserRequest.resourceDetails[0].type;
-	const handlerForResourceType = resourceTypeHandler[resourceType];
-	req.userData;
-	const a = await handlerForResourceType.prerequisite('i-sanyam');
+	const resourceDetails = existingUserRequest.resourceDetails[0];
+	await resourceTypeHandler.addAccess(resourceDetails.type, req.userData.login, resourceDetails.path);
 	return;
 }));
 

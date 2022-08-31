@@ -35,8 +35,8 @@ userRequestsRouter.post('/', ExpressRouteHandler(async (req) => {
 		return [{ status: 409, message: 'Request Already Raised' }];
 	}
 
-	await requestService.addUserRequest(userId, resourceId);
-	return;
+	const addedRequestDetails = await requestService.addUserRequest(userId, resourceId);
+	return [{ data: { requestId: addedRequestDetails.insertedId } }];
 }));
 
 userRequestsRouter.delete('/', ExpressRouteHandler(async (req) => {

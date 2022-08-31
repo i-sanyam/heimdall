@@ -6,17 +6,27 @@ const common = require('../utils/constants');
 const BASE_URL = 'https://api.github.com';
 
 class GithubResourceHandler extends BaseResourceHandler {
-    async prerequisite(username) {
-        const { data } = await axios({
+    constructor() {
+        super();
+    }
+
+    static async prerequisite(username) {
+        const data = await axios({
             method: 'GET',
             url: `${BASE_URL}/users/${username}`
         });
-        if (data.status === 200 && data.login === username && data.type != 'Organization') {
-            return true;
+        const userData = data.data;
+        
+        if (data.status === 200 && userData.login === username && userData.type !== 'Organization') {
+            return userData;
+        } else if (userData.type === 'Organization') {
+            throw new Error('Access to Organization is not allowed');
         }
-        return false;
+
+        throw new Error(`Github User ${username} does not exist`);
     }
-    async checkAccess(repositoryPath, username) {
+
+    static async checkAccess(repositoryPath, username) {
         // repositoryPath = 'owner/repo-name'
         const { data } = await axios({
             method: 'GET',
@@ -27,7 +37,8 @@ class GithubResourceHandler extends BaseResourceHandler {
         }
         return false;
     }
-    async addAccess(repositoryPath, username) {
+
+    static async addAccess(repositoryPath, username) {
         const { data } = await axios({
             method: 'PUT',
             url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,
@@ -37,7 +48,8 @@ class GithubResourceHandler extends BaseResourceHandler {
         });
         console.log(data);
     }
-    async removeAccess(repositoryPath, username) {
+
+    static async removeAccess(repositoryPath, username) {
         const { data } = await axios({
             method: 'DELETE',
             url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,

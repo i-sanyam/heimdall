@@ -4,17 +4,16 @@ class ResourceHandler {
     constructor() {
 
     }
-    async prerequisite(username) {
-
+    static async prerequisite(username) {
     }
-    async checkAccess(path, username) {
 
+    static async checkAccess(path, username) {
     }
-    async addAccess(path, username) {
 
+    static async addAccess(path, username) {
     }
-    async removeAccess(path, username) {
 
+    static async removeAccess(path, username) {
     }
 };
 
