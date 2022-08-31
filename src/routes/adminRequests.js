@@ -95,6 +95,7 @@ adminRequestsRouter.post('/approve', ExpressRouteHandler(async (req) => {
 		status: constants.requestStatusesEnum.APPROVED,
 		userId: existingUserRequest.requestRaisedBy,
 	});
+	// TODO: create a mapping of all resources to which user has access
 	return;
 }));
 
