@@ -1,7 +1,6 @@
 'use strict';
 
 const adminRequestsRouter = require('express').Router();
-const _ = require('underscore');
 
 const constants = require('../utils/constants');
 const adminMiddleware = require('../middlewares/admin');
