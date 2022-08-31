@@ -52,9 +52,10 @@ adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
 		return [{ status: 405, message: 'Invalid Request Status for Rejection' }];
 	}
 	
-	await requestService.rejectRequestById({
+	await requestService.updateRequestStatusById({
+		requestId,
+		status: constants.requestStatusesEnum.REJECTED,
         userId: existingUserRequest.requestRaisedBy,
-        requestId
     });
 	return;
 }));

@@ -55,7 +55,10 @@ userRequestsRouter.delete('/', ExpressRouteHandler(async (req) => {
 		return [{ status: 405, message: 'Invalid Request Status for deletion' }];
 	}
 	
-	await requestService.deleteRequestById({ userId, requestId });
+	await requestService.updateRequestStatusById({
+		requestId, userId,
+		status: constants.requestStatusesEnum.DELETED,
+	});
 	return;
 }));
 

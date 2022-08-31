@@ -39,26 +39,6 @@ const getUserRequestById = async (params, options) => {
     return await Mongo.Requests.find(findParams, options);
 };
 
-const deleteRequestById = async (params) => {
-    const { userId, requestId } = params;
-    return await Mongo.Requests.updateOne({
-        _id: new Mongo.__ObjectId(requestId),
-        requestRaisedBy: new Mongo.__ObjectId(userId),
-    }, {
-        $set: { status: requestStatusesEnum.DELETED },
-    });
-};
-
-const rejectRequestById = async (params) => {
-    const { userId, requestId } = params;
-    return await Mongo.Requests.updateOne({
-        _id: new Mongo.__ObjectId(requestId),
-        requestRaisedBy: new Mongo.__ObjectId(userId),
-    }, {
-        $set: { status: requestStatusesEnum.REJECTED },
-    });
-};
-
 const updateRequestStatusById = async (params) => {
     const { userId, requestId, status } = params;
     const findParams = {
@@ -122,10 +102,8 @@ const getRequestsWithResourceDetails = async (params, options) => {
 
 module.exports = {
     addUserRequest,
-    deleteRequestById,
     getRequestsWithResourceDetails,
     getUserRequests,
     getUserRequestById,
-    rejectRequestById,
     updateRequestStatusById,
 };
