@@ -2,6 +2,7 @@ const axios = require('axios');
 
 const BaseResourceHandler = require('./base');
 const common = require('../utils/constants');
+const { GITHUB: GITHUBCONFIG } = require('./config');
 
 const BASE_URL = 'https://api.github.com';
 
@@ -28,9 +29,12 @@ class GithubResourceHandler extends BaseResourceHandler {
 
     static async checkAccess(repositoryPath, username) {
         // repositoryPath = 'owner/repo-name'
-        const { data } = await axios({
+        const data = await axios({
             method: 'GET',
-            url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`
+            url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,
+            headers: {
+                "Authorization": `token ${GITHUBCONFIG.TOKEN}`,
+            },
         });
         if (data.status === 204) {
             return true;
@@ -43,7 +47,7 @@ class GithubResourceHandler extends BaseResourceHandler {
             method: 'PUT',
             url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,
             headers: {
-                "Authorization": common.GITHUB_AUTH
+                "Authorization": `token ${GITHUBCONFIG.TOKEN}`,
             }
         });
         console.log(data);
@@ -54,7 +58,7 @@ class GithubResourceHandler extends BaseResourceHandler {
             method: 'DELETE',
             url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,
             headers: {
-                "Authorization": common.GITHUB_AUTH
+                "Authorization": GITHUBCONFIG.TOKEN,
             }
         });
     }

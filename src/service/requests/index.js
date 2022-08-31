@@ -59,6 +59,17 @@ const rejectRequestById = async (params) => {
     });
 };
 
+const updateRequestStatusById = async (params) => {
+    const { userId, requestId, status } = params;
+    const findParams = {
+        _id: new Mongo.__ObjectId(requestId),
+    };
+    if (userId) {
+        findParams.requestRaisedBy = new Mongo.__ObjectId(userId);
+    }
+    return await Mongo.Requests.updateOne(findParams, { $set: { status } });
+}
+
 const getRequestsWithResourceDetails = async (params, options) => {
     const { requestIdsArray = [], resourceGroupIds = [], status } = params;
 
@@ -116,4 +127,5 @@ module.exports = {
     getUserRequests,
     getUserRequestById,
     rejectRequestById,
+    updateRequestStatusById,
 };

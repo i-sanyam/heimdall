@@ -80,7 +80,7 @@ adminRequestsRouter.post('/approve', ExpressRouteHandler(async (req) => {
 	const hasAdminAccess = resourceService.hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
 
 	if (!hasAdminAccess) {
-		return [{ status: 401, message: 'You need admin access for resource' }];
+		return [{ status: 401, message: 'You need admin access for approval' }];
 	}
 
 	if (existingUserRequest.status !== constants.requestStatusesEnum.OPEN) {
@@ -89,6 +89,11 @@ adminRequestsRouter.post('/approve', ExpressRouteHandler(async (req) => {
 
 	const resourceDetails = existingUserRequest.resourceDetails[0];
 	await resourceTypeHandler.addAccess(resourceDetails.type, req.userData.login, resourceDetails.path);
+	await requestService.updateRequestStatusById({
+		requestId,
+		status: constants.requestStatusesEnum.APPROVED,
+		userId: existingUserRequest.requestRaisedBy,
+	});
 	return;
 }));
 
