@@ -40,9 +40,15 @@ const hasResourceGroupAccess = (accessResourceGroups, resourceGroupsToCheck) => 
     return false;
 };
 
+const hasAdminResourceAccess = (adminData, resourceData) => {
+    const resourceGroupIds = resourceData.resourceGroupsArray || [];
+	const adminGroupIds = adminData.adminResourceGroupsArray;
+	return hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
+};
+
 module.exports = {
     createUserResourceMapping,
     getResourceById,
     getResourcesByResourceGroupIds,
-    hasResourceGroupAccess,
+    hasAdminResourceAccess,
 };

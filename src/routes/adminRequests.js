@@ -39,9 +39,7 @@ adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
 	const existingUserRequest = existingUserRequests[0];
 	const requestedResourceDetails = existingUserRequest.resourceDetails[0];
 
-	const resourceGroupIds = requestedResourceDetails.resourceGroupsArray || [];
-	const adminGroupIds = req.userData.adminResourceGroupsArray;
-	const hasAdminAccess = resourceService.hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
+	const hasAdminAccess = resourceService.hasAdminResourceAccess(req.userData, requestedResourceDetails);
 	if (!hasAdminAccess) {
 		return [{ status: 401, message: 'You need admin access for resource' }];
 	}
@@ -74,9 +72,7 @@ adminRequestsRouter.post('/approve', ExpressRouteHandler(async (req) => {
 	const existingUserRequest = existingUserRequests[0];
 	const requestedResourceDetails = existingUserRequest.resourceDetails[0];
 	
-	const resourceGroupIds = requestedResourceDetails.resourceGroupsArray || [];
-	const adminGroupIds = req.userData.adminResourceGroupsArray;
-	const hasAdminAccess = resourceService.hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
+	const hasAdminAccess = resourceService.hasAdminResourceAccess(req.userData, requestedResourceDetails);
 	if (!hasAdminAccess) {
 		return [{ status: 401, message: 'You need admin access for approval' }];
 	}

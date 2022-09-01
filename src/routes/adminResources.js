@@ -20,7 +20,7 @@ router.get('/', ExpressRouteHandler(async (req) => {
 }));
 
 router.delete('/revoke', ExpressRouteHandler(async (req) => {
-    const { resourceId, userId } = req.body.resourceId;
+    const { resourceId, userId } = req.body;
     if (!resourceId) {
         return [{ status: 400, message: 'Resource Id not present' }];
     }
@@ -40,11 +40,9 @@ router.delete('/revoke', ExpressRouteHandler(async (req) => {
     }
     const resourceDetails = resourceDetailsArray[0];
 
-    const resourceGroupIds = resourceDetails.resourceGroupsArray || [];
-    const adminGroupIds = req.userData.adminResourceGroupsArray;
-    const hasAdminAccess = resourceService.hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
+    const hasAdminAccess = resourceService.hasAdminResourceAccess(req.userData, resourceDetails);
     if (!hasAdminAccess) {
-        return [{ status: 401, message: 'You need admin access for approval' }];
+        return [{ status: 401, message: 'You don\'t have admin access for revoke' }];
     }
 
     await resourceTypeHandler.removeAccess(resourceDetails.type, userDetails.login, resourceDetails.path);
