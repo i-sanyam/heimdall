@@ -46,9 +46,16 @@ const hasAdminResourceAccess = (adminData, resourceData) => {
 	return hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
 };
 
+const hasUserResourceAccess = (adminData, resourceData) => {
+    const resourceGroupIds = resourceData.resourceGroupsArray || [];
+	const userGroupIds = adminData.userResourceGroupsArray;
+	return hasResourceGroupAccess(userGroupIds, resourceGroupIds);
+};
+
 module.exports = {
     createUserResourceMapping,
     getResourceById,
     getResourcesByResourceGroupIds,
     hasAdminResourceAccess,
+    hasUserResourceAccess,
 };
