@@ -29,4 +29,5 @@ module.exports = {
     Resources: new BaseMongoCollection('resources'),
     ApiLogs: new BaseMongoCollection('api_logs'),
     Requests: new BaseMongoCollection('requests'),
+    UserResources: new BaseMongoCollection('user_resources'),
 };

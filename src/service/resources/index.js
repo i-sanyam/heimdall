@@ -1,5 +1,20 @@
 const Mongo = require('../../mongo');
 
+const createUserResourceMapping = async(params) => {
+    const { userId, resourceId, status, lastUpdatedByAdmin } = params;
+
+    const insertParams = {
+        status,
+        resourceId: Mongo.__ObjectId(resourceId),
+        userId: Mongo.__ObjectId(userId),
+    };
+    if (lastUpdatedByAdmin) {
+        insertParams.lastUpdatedByAdmin = Mongo.__ObjectId(lastUpdatedByAdmin);
+    }
+    
+    return await Mongo.UserResources.insertOne(insertParams);
+};
+
 const getResourcesByResourceGroupIds = async (resourceGroupIds) => {
     return await Mongo.Resources.find({
         resourceGroupsArray: {
@@ -25,8 +40,8 @@ const hasResourceGroupAccess = (accessResourceGroups, resourceGroupsToCheck) => 
     return false;
 };
 
-
 module.exports = {
+    createUserResourceMapping,
     getResourceById,
     getResourcesByResourceGroupIds,
     hasResourceGroupAccess,

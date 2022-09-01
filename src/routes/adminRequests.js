@@ -84,7 +84,7 @@ adminRequestsRouter.post('/approve', ExpressRouteHandler(async (req) => {
 	}
 
 	if (existingUserRequest.status !== constants.requestStatusesEnum.OPEN) {
-		return [{ status: 405, message: 'Invalid Request Status for Rejection' }];
+		return [{ status: 405, message: 'Invalid Request Status for approval' }];
 	}
 
 	const resourceDetails = existingUserRequest.resourceDetails[0];
@@ -94,7 +94,12 @@ adminRequestsRouter.post('/approve', ExpressRouteHandler(async (req) => {
 		status: constants.requestStatusesEnum.APPROVED,
 		userId: existingUserRequest.requestRaisedBy,
 	});
-	// TODO: create a mapping of all resources to which user has access
+	await resourceService.createUserResourceMapping({
+		resourceId: resourceDetails._id.toString(),
+		status: constants.accessStatusesEnum.GRANTED,
+		userId: existingUserRequest.requestRaisedBy,
+		lastUpdatedByAdmin: req.userData._id.toString(), 
+	});
 	return;
 }));
 
