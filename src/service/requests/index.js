@@ -5,18 +5,18 @@ const { requestStatusesEnum } = require('../../utils/constants');
 
 const addUserRequest = async (userId, resourceId) => {
     return await Mongo.Requests.insertOne({
-        requestRaisedBy: new Mongo.__ObjectId(userId),
-        resourceId: new Mongo.__ObjectId(resourceId),
+        requestRaisedBy: Mongo.__ObjectId(userId),
+        resourceId: Mongo.__ObjectId(resourceId),
         status: requestStatusesEnum.OPEN,
     });
 }
 
 const getUserRequests = async (userId, status, resourceId) => {
     const findParams = {
-        requestRaisedBy: new Mongo.__ObjectId(userId),
+        requestRaisedBy: Mongo.__ObjectId(userId),
     };
     if (resourceId) {
-        findParams.resourceId = new Mongo.__ObjectId(resourceId);
+        findParams.resourceId = Mongo.__ObjectId(resourceId);
     }
     if (status) {
         findParams.status = status;
@@ -27,14 +27,14 @@ const getUserRequests = async (userId, status, resourceId) => {
 const getUserRequestById = async (params, options) => {
     const { userId, requestId, status, resourceId } = params;
     const findParams = {
-        _id: new Mongo.__ObjectId(requestId),
-        requestRaisedBy: new Mongo.__ObjectId(userId),
+        _id: Mongo.__ObjectId(requestId),
+        requestRaisedBy: Mongo.__ObjectId(userId),
     };
     if (status) {
         findParams.status = status;
     }
     if (resourceId) {
-        findParams.resourceId = new Mongo.__ObjectId(resourceId);
+        findParams.resourceId = Mongo.__ObjectId(resourceId);
     }
     return await Mongo.Requests.find(findParams, options);
 };
@@ -42,10 +42,10 @@ const getUserRequestById = async (params, options) => {
 const updateRequestStatusById = async (params) => {
     const { userId, requestId, status } = params;
     const findParams = {
-        _id: new Mongo.__ObjectId(requestId),
+        _id: Mongo.__ObjectId(requestId),
     };
     if (userId) {
-        findParams.requestRaisedBy = new Mongo.__ObjectId(userId);
+        findParams.requestRaisedBy = Mongo.__ObjectId(userId);
     }
     return await Mongo.Requests.updateOne(findParams, { $set: { status } });
 }
@@ -67,7 +67,7 @@ const getRequestsWithResourceDetails = async (params, options) => {
     if (requestIdsArray && requestIdsArray.length !== 0) {
         requestMatch._id = { 
             $in: requestIdsArray.map((requestId) => {
-                return new Mongo.__ObjectId(requestId);
+                return Mongo.__ObjectId(requestId);
             }),
         };
     }
@@ -76,7 +76,7 @@ const getRequestsWithResourceDetails = async (params, options) => {
     if (resourceGroupIds && resourceGroupIds.length !== 0) {
         resourceMatch['resourceDetails.resourceGroupsArray'] = {
             $in: resourceGroupIds.map((resourceGroupId) => {
-                return new Mongo.__ObjectId(resourceGroupId);
+                return Mongo.__ObjectId(resourceGroupId);
             }),
         };
     }

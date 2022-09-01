@@ -10,7 +10,7 @@ const getResourcesByResourceGroupIds = async (resourceGroupIds) => {
 
 const getResourceById = async (resourceId) => {
     return await Mongo.Resources.find({
-        _id: new Mongo.__ObjectId(resourceId),
+        _id: Mongo.__ObjectId(resourceId),
     });
 }
 

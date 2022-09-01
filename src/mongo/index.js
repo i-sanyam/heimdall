@@ -16,8 +16,12 @@ const stringifyObjectId = (objectId) => {
     return new ObjectId(objectId).toString();
 };
 
+const __ObjectId = (objectId) => {
+    return new ObjectId(objectId);
+};
+
 module.exports = {
-    __ObjectId: ObjectId,
+    __ObjectId,
     __stringifyObjectId: stringifyObjectId,
     __startSession: startSession,
     __endSession: endSession,
