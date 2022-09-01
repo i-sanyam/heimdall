@@ -27,7 +27,7 @@ const validateGithubUserAndGetCookie = async (userData) => {
         userId = existingUserData[0]._id;
         await Mongo.Users.updateOne({
             _id: userId,
-        }, { 
+        }, {
             $set: {
                 avatar_url: userData.avatar_url,
             }
@@ -50,7 +50,7 @@ const getUser = async (userId) => {
     if (!userId) {
         throw new Error('userId is required');
     }
-   return await Mongo.Users.find({
+    return await Mongo.Users.find({
         _id: Mongo.__ObjectId(userId),
     });
 }

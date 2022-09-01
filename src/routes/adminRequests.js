@@ -37,12 +37,11 @@ adminRequestsRouter.post('/reject', ExpressRouteHandler(async (req) => {
 		return [{ status: 404, message: 'Request Not Found' }];
 	}
 	const existingUserRequest = existingUserRequests[0];
-
 	const requestedResourceDetails = existingUserRequest.resourceDetails[0];
+
 	const resourceGroupIds = requestedResourceDetails.resourceGroupsArray || [];
 	const adminGroupIds = req.userData.adminResourceGroupsArray;
 	const hasAdminAccess = resourceService.hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
-
 	if (!hasAdminAccess) {
 		return [{ status: 401, message: 'You need admin access for resource' }];
 	}
@@ -73,12 +72,11 @@ adminRequestsRouter.post('/approve', ExpressRouteHandler(async (req) => {
 		return [{ status: 404, message: 'Request Not Found' }];
 	}
 	const existingUserRequest = existingUserRequests[0];
-	
 	const requestedResourceDetails = existingUserRequest.resourceDetails[0];
+	
 	const resourceGroupIds = requestedResourceDetails.resourceGroupsArray || [];
 	const adminGroupIds = req.userData.adminResourceGroupsArray;
 	const hasAdminAccess = resourceService.hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
-
 	if (!hasAdminAccess) {
 		return [{ status: 401, message: 'You need admin access for approval' }];
 	}
@@ -87,8 +85,7 @@ adminRequestsRouter.post('/approve', ExpressRouteHandler(async (req) => {
 		return [{ status: 405, message: 'Invalid Request Status for approval' }];
 	}
 
-	const resourceDetails = existingUserRequest.resourceDetails[0];
-	await resourceTypeHandler.addAccess(resourceDetails.type, req.userData.login, resourceDetails.path);
+	await resourceTypeHandler.addAccess(resourceDetails.type, req.userData.login, requestedResourceDetails.path);
 	await requestService.updateRequestStatusById({
 		requestId,
 		status: constants.requestStatusesEnum.APPROVED,
