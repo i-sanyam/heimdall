@@ -1,0 +1,13 @@
+{
+    "_id" : ObjectId("randomind"),
+    "id" : "shelbycooper",
+    "oauth" : {
+        "provider" : "FOOMAIL",
+        "AUTHORIZE_URL" : "https://foomail.com/login/oauth/authorize",
+        "ACCESS_TOKEN_URL" : "https://foomail.com/login/oauth/access_token",
+        "CALLBACK_URL" : "/api/oauth/callback",
+        "CLIENT_ID" : "your_client_id",
+        "CLIENT_SECRET" : "your_client_secret",
+        "USER_DETAILS_URL" : "https://api.foomail.com/user"
+    }
+}
