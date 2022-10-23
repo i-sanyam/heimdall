@@ -27,6 +27,11 @@ class OAuthProviderBase {
         this.USER_DETAILS_URL = userDetailsURL;
     }
 
+    get AUTHORIZE_URL() {
+        throw new Error('Getter is not defined');
+    }
+
+
     async requestAccessTokenViaCallbackCode(authCode) {
         if (!authCode || authCode.length === 0) {
             throw new Error('Code is required');
