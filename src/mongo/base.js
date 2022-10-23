@@ -14,6 +14,10 @@ class BaseMongoCollection {
         return await this._collection.find(filter, options).toArray();
     }
 
+    async findOne(filter, options) {
+        return await this._collection.findOne(filter, options);
+    }
+
     async insertOne(doc, options) {
         doc.createdAt = new Date();
         return await this._collection.insertOne(doc, options);
