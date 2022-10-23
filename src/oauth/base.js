@@ -79,6 +79,13 @@ class OAuthProviderBase {
             id: userId,
         });
     }
+
+    async getUserCookieViaCallbackAuthCode(authCode) {
+        const accessToken = await this.requestAccessTokenViaCallbackCode(authCode);
+        const userData = await this.requestUserDataViaAccessToken(accessToken);
+        const cookie = await this.validateUserAndGetCookie(userData);
+        return cookie;
+    }
 };
 
 module.exports = OAuthProviderBase;
