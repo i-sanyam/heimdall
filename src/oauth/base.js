@@ -2,6 +2,9 @@
 
 const assert = require('assert');
 
+const Mongo = require('../mongo');
+const jwtService = require('../service/jwt');
+
 class OAuthProviderBase {
     constructor(params) {
         const { 
@@ -24,22 +27,52 @@ class OAuthProviderBase {
         this.USER_DETAILS_URL = userDetailsURL;
     }
 
-    static async requestAccessTokenViaCallbackCode(authCode) {
+    async requestAccessTokenViaCallbackCode(authCode) {
         if (!authCode || authCode.length === 0) {
             throw new Error('Code is required');
         }
         throw new Error('Method is not implemented');
     }
 
-    static async requestUserDataViaAccessToken(accessToken) {
+    async requestUserDataViaAccessToken(accessToken) {
         if (!accessToken || accessToken.length === 0) {
             throw new Error('Access Token is required');
         }
         throw new Error('Method is not implemented');
     }
 
-    static async validateUserAndGetCookie(userData) {
-        throw new Error('Method is not implemented');
+    async validateUserAndGetCookie(userData) {
+        let userId = null;
+
+        const existingUserData = await Mongo.Users.find({
+            id: userData.id,
+            login: userData.login,
+            OAUTH_TYPE: this.OAUTH_PROVIDER,
+        });
+    
+        if (!existingUserData || existingUserData.length === 0) {
+            const { insertedId: newUserId } = await Mongo.Users.insertOne({
+                id: userData.id,
+                login: userData.login,
+                avatar_url: userData.avatar_url,
+                OAUTH_TYPE: this.OAUTH_PROVIDER,
+                oauth_provider_metadata: userData,
+            });
+            userId = newUserId;
+        } else {
+            userId = existingUserData[0]._id;
+            await Mongo.Users.updateOne({
+                _id: userId,
+            }, {
+                $set: {
+                    avatar_url: userData.avatar_url,
+                }
+            });
+        }
+    
+        return jwtService.generateJWT({
+            id: userId,
+        });
     }
 };
 
