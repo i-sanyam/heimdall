@@ -3,6 +3,7 @@
 const axios = require('axios');
 
 const OAuthProviderBase = require('./base');
+const config = require('../config.json');
 
 class OAuthGithub extends OAuthProviderBase {
     constructor(params) {
@@ -12,6 +13,14 @@ class OAuthGithub extends OAuthProviderBase {
         // } = params;
         this.OAUTH_PROVIDER = 'GITHUB';
         super(params);
+    }
+
+    get AUTHORIZE_URL() {
+        const AUTHORIZE_URL_INTERFACE = new URL(this.AUTHORIZE_URL);
+        AUTHORIZE_URL_INTERFACE.searchParams.append('response_type', 'code');
+        AUTHORIZE_URL_INTERFACE.searchParams.append('client_id', this.CLIENT_ID);
+        AUTHORIZE_URL_INTERFACE.searchParams.append('redirect_uri', config.SELF_BASE_URL + this.CALLBACK_URL)
+        return AUTHORIZE_URL_INTERFACE.href;
     }
 
     async requestAccessTokenViaCallbackCode(authCode) {
