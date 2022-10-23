@@ -27,7 +27,7 @@ class OAuthProviderBase {
         this.USER_DETAILS_URL = USER_DETAILS_URL;
     }
 
-    get AUTHORIZE_URL() {
+    get LOGIN_AUTHORIZE_URL() {
         throw new Error('Getter is not defined');
     }
 

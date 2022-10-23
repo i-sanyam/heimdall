@@ -11,7 +11,7 @@ class OAuthGithub extends OAuthProviderBase {
         this.OAUTH_PROVIDER = 'GITHUB';
     }
 
-    get AUTHORIZE_URL() {
+    get LOGIN_AUTHORIZE_URL() {
         const AUTHORIZE_URL_INTERFACE = new URL(this.AUTHORIZE_URL);
         AUTHORIZE_URL_INTERFACE.searchParams.append('response_type', 'code');
         AUTHORIZE_URL_INTERFACE.searchParams.append('client_id', this.CLIENT_ID);
