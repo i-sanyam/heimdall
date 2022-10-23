@@ -8,23 +8,23 @@ const jwtService = require('../service/jwt');
 class OAuthProviderBase {
     constructor(params) {
         const { 
-            clientId, clientSecret, 
-            accessTokenURL, authorizeURL, callbackURL, userDetailsURL 
+            CLIENT_ID, CLIENT_SECRET, 
+            ACCESS_TOKEN_URL, AUTHORIZE_URL, CALLBACK_URL, USER_DETAILS_URL 
         } = params;
 
-        assert(clientId, 'clientId is required to initialise OAuth Provider');
-        assert(clientSecret, 'clientSecret is required to initialise OAuth Provider');
-        assert(accessTokenURL, 'accessTokenURL is required to initialise OAuth Provider');
-        assert(authorizeURL, 'authorizeURL is required to initialise OAuth Provider');
-        assert(callbackURL, 'callbackURL is required to initialise OAuth Provider');
-        assert(userDetailsURL, 'userDetailsURL is required to initialise OAuth Provider');
+        assert(CLIENT_ID, 'CLIENT_ID is required to initialise OAuth Provider');
+        assert(CLIENT_SECRET, 'CLIENT_SECRET is required to initialise OAuth Provider');
+        assert(ACCESS_TOKEN_URL, 'ACCESS_TOKEN_URL is required to initialise OAuth Provider');
+        assert(AUTHORIZE_URL, 'AUTHORIZE_URL is required to initialise OAuth Provider');
+        assert(CALLBACK_URL, 'CALLBACK_URL is required to initialise OAuth Provider');
+        assert(USER_DETAILS_URL, 'USER_DETAILS_URL is required to initialise OAuth Provider');
 
-        this.CLIENT_ID = clientId;
-        this.CLIENT_SECRET = clientSecret;
-        this.ACCESS_TOKEN_URL = accessTokenURL;
-        this.AUTHORIZE_URL = authorizeURL;
-        this.CALLBACK_URL = callbackURL;
-        this.USER_DETAILS_URL = userDetailsURL;
+        this.CLIENT_ID = CLIENT_ID;
+        this.CLIENT_SECRET = CLIENT_SECRET;
+        this.ACCESS_TOKEN_URL = ACCESS_TOKEN_URL;
+        this.AUTHORIZE_URL = AUTHORIZE_URL;
+        this.CALLBACK_URL = CALLBACK_URL;
+        this.USER_DETAILS_URL = USER_DETAILS_URL;
     }
 
     get AUTHORIZE_URL() {
