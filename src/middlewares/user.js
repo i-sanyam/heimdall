@@ -24,6 +24,13 @@ const verifyUser = async (req, res, next) => {
     }
 };
 
+const getOrganisationId = (req, res, next) => {
+    const organisationId = req.headers['organisation-id'] || req.headers['organisation_id'] || 'default';
+    req.organisationId = organisationId;
+    next();
+};
+
 module.exports = {
+    getOrganisationId,
     verifyUser,
 };
