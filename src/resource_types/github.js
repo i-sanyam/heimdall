@@ -1,7 +1,6 @@
 const axios = require('axios');
 
 const BaseResourceHandler = require('./base');
-const common = require('../utils/constants');
 const { GITHUB: GITHUBCONFIG } = require('./config');
 
 const BASE_URL = 'https://api.github.com';
