@@ -7,8 +7,8 @@ const config = require('../config.json');
 
 class OAuthGithub extends OAuthProviderBase {
     constructor(params) {
-        this.OAUTH_PROVIDER = 'GITHUB';
         super(params);
+        this.OAUTH_PROVIDER = 'GITHUB';
     }
 
     get AUTHORIZE_URL() {
