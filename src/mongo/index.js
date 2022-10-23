@@ -25,9 +25,10 @@ module.exports = {
     __stringifyObjectId: stringifyObjectId,
     __startSession: startSession,
     __endSession: endSession,
-    Users: new BaseMongoCollection('users'),
-    Resources: new BaseMongoCollection('resources'),
     ApiLogs: new BaseMongoCollection('api_logs'),
+    OrganisationConfig: new BaseMongoCollection('organisation_config'),
+    Resources: new BaseMongoCollection('resources'),
     Requests: new BaseMongoCollection('requests'),
     UserResources: new BaseMongoCollection('user_resources'),
+    Users: new BaseMongoCollection('users'),
 };
