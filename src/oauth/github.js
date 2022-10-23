@@ -31,7 +31,7 @@ class OAuthGithub extends OAuthProviderBase {
             },
             url: this.ACCESS_TOKEN_URL,
             params: {
-                code,
+                code: authCode,
                 client_id: this.CLIENT_ID,
                 client_secret: this.CLIENT_SECRET,
             },
