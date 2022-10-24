@@ -21,7 +21,19 @@ const getUserRequests = async (userId, status, resourceId) => {
     if (status) {
         findParams.status = status;
     }
-    return await Mongo.Requests.find(findParams);
+    return await Mongo.Requests.aggregate([
+        {
+            $match: findParams,
+        },
+        {
+            $lookup: {
+                from: 'resources',
+                localField: 'resourceId',
+                foreignField: '_id',
+                as: 'resourceDetails',
+            },
+        }
+    ]);
 };
 
 const getUserRequestById = async (params, options) => {
