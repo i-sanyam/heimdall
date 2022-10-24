@@ -27,7 +27,7 @@ router.get('/', ExpressRouteHandler(async (req) => {
     }
 
     const allResources = await resourceService.getResourcesByResourceGroupIds(userGroupIds);
-    return [{ data: { resources: allResources } }];
+    return [{ data: allResources }];
 }));
 
 router.delete('/relinquish', ExpressRouteHandler(async (req) => {
