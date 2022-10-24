@@ -15,9 +15,7 @@ userRouter.get('/logout', ExpressRouteHandler((req, res) => {
 userRouter.get('/', ExpressRouteHandler((req, res) => {
     return [{
         message: 'Logged In',
-        data: {
-            user: req.userData,
-        }
+        data: req.userData,
     }];
 }));
 
