@@ -14,6 +14,12 @@ userRequestsRouter.use(userMiddleware.verifyUser);
 userRequestsRouter.get('/', ExpressRouteHandler(async (req) => {
 	const userId = req.userData._id.toString();
 	const requests = await requestService.getUserRequests(userId);
+	const requestsMapped = requests.map(request => {
+		return {
+			...request,
+			statusDetails: constants.accessStatusesEnumReverse[request.status],
+		};
+	});
 	return [{ data: requests }];
 }));
 
