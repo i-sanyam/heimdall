@@ -3,6 +3,7 @@
 const oAuthRouter = require('express').Router();
 const assert = require('assert');
 
+const config = require('../config.json');
 const userMiddleware = require('../middlewares/user');
 const Mongo = require('../mongo');
 const OAuthHandler = require('../oauth');
@@ -23,7 +24,7 @@ oAuthRouter.get('/callback', async (req, res) => {
     const tempCode = originalUrl.split('=')[1];
     const cookie = await req.handlerOAuth.getUserCookieViaCallbackAuthCode(tempCode);
     res.cookie('access_token', cookie);
-    return res.redirect('/api/resource');
+    return res.redirect(config.FRONTEND_URL);
 });
 
 oAuthRouter.get('/login', (req, res) => {
