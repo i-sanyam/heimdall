@@ -8,7 +8,7 @@ const requestStatusesEnum = {
 };
 
 const requestStatusesEnumReverse = {
-    1: { name: 'Waiting for Approval', color: 'info'},
+    1: { name: 'Waiting for Approval', color: 'secondary'},
     2: { name: 'Access Granted', color: 'success'},
     3: { name: 'Access Denied', color: 'danger'},
     4: { name: 'Request deleted', color: 'warning' },
