@@ -1,6 +1,7 @@
 {
     
     "SELF_BASE_URL": "",
+    "FRONTEND_URL": "",
     "JWT": {
         "TOKEN_SECRET": "",
         "SESSION_EXPIRY": ""

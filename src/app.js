@@ -3,11 +3,12 @@ const cookieParser = require('cookie-parser')
 const app = Express();
 const cors = require('cors');
 
+const config = require('./config.json');
 
 app.use(Express.json());
 app.use(Express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({ credentials: true, origin: config.FRONTEND_URL }));
 
 global.MONGODB_CONNECTOR = null;
 (async () => {
@@ -24,7 +25,7 @@ global.MONGODB_CONNECTOR = null;
     return res.send('Welcome to Heimdall - Open Source Access Management.');
   });
   app.use(logging.logAndHandleExpressErrors);
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || config.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server started on localhost:${PORT}`);
   });
