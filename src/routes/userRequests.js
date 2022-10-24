@@ -20,7 +20,7 @@ userRequestsRouter.get('/', ExpressRouteHandler(async (req) => {
 			statusDetails: constants.accessStatusesEnumReverse[request.status],
 		};
 	});
-	return [{ data: requests }];
+	return [{ data: requestsMapped }];
 }));
 
 userRequestsRouter.post('/', ExpressRouteHandler(async (req) => {
