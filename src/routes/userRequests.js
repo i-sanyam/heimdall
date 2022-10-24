@@ -17,7 +17,7 @@ userRequestsRouter.get('/', ExpressRouteHandler(async (req) => {
 	const requestsMapped = requests.map(request => {
 		return {
 			...request,
-			statusDetails: constants.accessStatusesEnumReverse[request.status],
+			statusDetails: constants.requestStatusesEnumReverse[request.status],
 		};
 	});
 	return [{ data: requestsMapped }];
