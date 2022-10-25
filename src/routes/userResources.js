@@ -44,7 +44,7 @@ router.get('/access', ExpressRouteHandler(async (req) => {
             resourceDetails,
         };
     });
-    return [{ data: allResources }];
+    return [{ data: mappedResources }];
 }));
 
 router.delete('/relinquish', ExpressRouteHandler(async (req) => {
