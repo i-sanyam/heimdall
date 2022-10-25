@@ -30,9 +30,11 @@ router.get('/', ExpressRouteHandler(async (req) => {
 
     const allResources = await resourceService.getResourcesByResourceGroupIds(userGroupIds);
     const mappedResources = allResources.map((resource) => {
-        response.hasAccess = resource.userResource && resource.userResource[0] && resource.userResource[0]._id ? true : false;
-        delete response.userResource;
-        return resource;
+        const { _id, type, name, path, url, userResource } = resource;
+        return {
+            _id, type, name, path, url,
+            hasAccess: userResource && userResource[0] && userResource[0]._id ? true : false,
+        };
     });
     return [{ data: mappedResources }];
 }));
