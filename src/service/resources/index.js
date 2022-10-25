@@ -1,3 +1,5 @@
+const constants = require('../../utils/constants');
+
 const Mongo = require('../../mongo');
 
 const createUserResourceMapping = async(params) => {
@@ -13,6 +15,25 @@ const createUserResourceMapping = async(params) => {
     }
     
     return await Mongo.UserResources.insertOne(insertParams);
+};
+
+const getUserAccesibleResources = async (userId) => {
+    return await Mongo.UserResources.aggregate([
+        {
+            $match: {
+                status: constants.accessStatusesEnum.GRANTED,
+                userId: Mongo.__ObjectId(userId),
+            }
+        },
+        {
+            $lookup: {
+                from: 'resources',
+                localField: 'resourceId',
+                foreignField: '_id',
+                as: 'resourceDetails',
+            },
+        }
+    ]);
 };
 
 const getResourcesByResourceGroupIds = async (resourceGroupIds) => {
@@ -56,6 +77,7 @@ module.exports = {
     createUserResourceMapping,
     getResourceById,
     getResourcesByResourceGroupIds,
+    getUserAccesibleResources,
     hasAdminResourceAccess,
     hasUserResourceAccess,
 };
