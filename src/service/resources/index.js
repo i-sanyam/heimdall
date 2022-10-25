@@ -36,7 +36,7 @@ const getUserAccesibleResources = async (userId) => {
     ]);
 };
 
-const getResourcesByResourceGroupIds = async (resourceGroupIds) => {
+const getResourcesByResourceGroupIds = async (resourceGroupIds, userId) => {
     return await Mongo.Resources.aggregate([
         {
             $match: {
@@ -50,6 +50,16 @@ const getResourcesByResourceGroupIds = async (resourceGroupIds) => {
                 from: 'user_resources',
                 localField: '_id',
                 foreignField: 'resourceId',
+                pipeline: [
+                    {
+                        $match: {
+                            userId: Mongo.__ObjectId(userId),
+                        }
+                    },
+                    {
+                        $project: { _id: 1 },
+                    }
+                ],
                 as: 'userResource',
             },
         },

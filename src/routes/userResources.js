@@ -19,7 +19,7 @@ router.get('/type', ExpressRouteHandler(async () => {
 // returns the resources for which user can request access
 router.get('/', ExpressRouteHandler(async (req) => {
     const userDetails = req.userData;
-
+    const userId = userDetails._id;
     const userGroupIds = userDetails.userResourceGroupsArray;
     if (!userGroupIds || !Array.isArray(userGroupIds) || userGroupIds.length === 0) {
         return [{
@@ -28,7 +28,7 @@ router.get('/', ExpressRouteHandler(async (req) => {
         }];
     }
 
-    const allResources = await resourceService.getResourcesByResourceGroupIds(userGroupIds);
+    const allResources = await resourceService.getResourcesByResourceGroupIds(userGroupIds, userId);
     const mappedResources = allResources.map((resource) => {
         const { _id, type, name, path, url, userResource } = resource;
         return {
