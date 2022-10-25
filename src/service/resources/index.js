@@ -76,6 +76,11 @@ const getResourcesByResourceGroupIds = async (resourceGroupIds, userId) => {
             },
         }
     ]);
+    /**
+     * SELECT * FROM resources 
+     * LEFT JOIN user_resources ON user_resources.resourceId = resources._id
+     * WHERE user_resources.user_id = $1
+     */
 };
 
 const getResourceById = async (resourceId) => {
