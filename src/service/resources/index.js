@@ -37,11 +37,35 @@ const getUserAccesibleResources = async (userId) => {
 };
 
 const getResourcesByResourceGroupIds = async (resourceGroupIds) => {
-    return await Mongo.Resources.find({
-        resourceGroupsArray: {
-            $in: resourceGroupIds,
+    return await Mongo.Resources.aggregate([
+        {
+            $match: {
+                resourceGroupsArray: {
+                    $in: resourceGroupIds,
+                }
+            },
+        },
+        {
+            $lookup: {
+                from: 'user_resources',
+                localField: '_id',
+                foreignField: 'resourceId',
+                as: 'userResource',
+            },
+        },
+        {
+            $project: {
+                _id: 1,
+                type: 1,
+                name: 1,
+                path: 1,
+                url: 1,
+                userResource: {
+                    _id: 1,
+                },
+            },
         }
-    });
+    ]);
 };
 
 const getResourceById = async (resourceId) => {

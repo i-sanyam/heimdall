@@ -5,6 +5,7 @@ const userMiddleware = require('../middlewares/user');
 const resourceService = require('../service/resources');
 const ExpressRouteHandler = require('./routeHandler');
 const resourceTypeHandler = require('../resource_types');
+const { response } = require('express');
 
 router.use(userMiddleware.verifyUser);
 
@@ -28,7 +29,12 @@ router.get('/', ExpressRouteHandler(async (req) => {
     }
 
     const allResources = await resourceService.getResourcesByResourceGroupIds(userGroupIds);
-    return [{ data: allResources }];
+    const mappedResources = allResources.map((resource) => {
+        response.hasAccess = resource.userResource && resource.userResource[0] && resource.userResource[0]._id ? true : false;
+        delete response.userResource;
+        return resource;
+    });
+    return [{ data: mappedResources }];
 }));
 
 // returns resources to which user has access
