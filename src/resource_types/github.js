@@ -10,6 +10,12 @@ class GithubResourceHandler extends BaseResourceHandler {
         super();
     }
 
+    static actionMapping = {
+        PULL: 'pull',
+        PUSH: 'push',
+    };
+    static supportedActionTypes = [ this.actionMapping.PULL, this.actionMapping.PUSH ];
+
     static async prerequisite(username) {
         const data = await axios({
             method: 'GET',
@@ -22,7 +28,6 @@ class GithubResourceHandler extends BaseResourceHandler {
         } else if (userData.type === 'Organization') {
             throw new Error('Access to Organization is not allowed');
         }
-
         throw new Error(`Github User ${username} does not exist`);
     }
 
@@ -31,15 +36,29 @@ class GithubResourceHandler extends BaseResourceHandler {
         try {
             const data = await axios({
                 method: 'GET',
-                url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}`,
+                url: `${BASE_URL}/repos/${repositoryPath}/collaborators/${username}/permission`,
                 headers: {
                     "Authorization": `token ${GITHUBCONFIG.TOKEN}`,
                 },
-            })
-            if (data.status === 204) {
-                return true;
+            });
+            if (data.status !== 200) {
+                return false;
             }
-            return false;
+            const userPermissions = data?.data?.user?.permissions || {};
+            const parsedUserPermissions = {
+                [this.actionMapping.PULL]: false,
+                [this.actionMapping.PUSH]: false,
+            };
+            
+            for (const action in userPermissions) {
+                if (!this.supportedActionTypes.includes(action)) {
+                    continue;
+                }
+                const actionValue = userPermissions[action];
+                parsedUserPermissions[action] = actionValue;
+            }
+
+            return parsedUserPermissions;
         } catch(e) {
             if (e.response && e.response.status === 404) {
                 return false;
