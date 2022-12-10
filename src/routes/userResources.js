@@ -1,23 +1,21 @@
-const router = require('express').Router();
+const UserResourcesRouter = require('express').Router();
 
 const constants = require('../utils/constants');
 const userMiddleware = require('../middlewares/user');
 const resourceService = require('../service/resources');
 const ExpressRouteHandler = require('./routeHandler');
 const resourceTypeHandler = require('../resource_types');
-const { response } = require('express');
 
-router.use(userMiddleware.verifyUser);
+UserResourcesRouter.use(userMiddleware.verifyUser);
 
-router.get('/type', ExpressRouteHandler(async () => {
-    const supportedResourceTypes = Object.keys(constants.resourceTypesEnum);
+UserResourcesRouter.get('/type', ExpressRouteHandler(async () => {
     return [{
-        data: { types: supportedResourceTypes },
+        data: constants.resourceTypesInfo,
     }];
 }));
 
 // returns the resources for which user can request access
-router.get('/', ExpressRouteHandler(async (req) => {
+UserResourcesRouter.get('/', ExpressRouteHandler(async (req) => {
     const userDetails = req.userData;
     const userId = userDetails._id;
     const userGroupIds = userDetails.userResourceGroupsArray;
@@ -40,7 +38,7 @@ router.get('/', ExpressRouteHandler(async (req) => {
 }));
 
 // returns resources to which user has access
-router.get('/access', ExpressRouteHandler(async (req) => {
+UserResourcesRouter.get('/access', ExpressRouteHandler(async (req) => {
     const userDetails = req.userData;
     const userId = userDetails._id;
 
@@ -55,7 +53,7 @@ router.get('/access', ExpressRouteHandler(async (req) => {
     return [{ data: mappedResources }];
 }));
 
-router.delete('/relinquish', ExpressRouteHandler(async (req) => {
+UserResourcesRouter.delete('/relinquish', ExpressRouteHandler(async (req) => {
     const { resourceId } = req.body;
     if (!resourceId) {
         return [{ status: 400, message: 'Resource Id not present' }];
@@ -83,4 +81,4 @@ router.delete('/relinquish', ExpressRouteHandler(async (req) => {
     return;
 }));
 
-module.exports = router;
+module.exports = UserResourcesRouter;

@@ -28,12 +28,21 @@ const accessStatusesEnumReverse = {
     4: { name: 'Access Revoked', color: 'warning' },
 };
 
-const resourceTypesEnum = {
-    GITHUB: 1,
-};
-
-const resourceTypesEnumReverse = {
-    1: 'GITHUB',
+const resourceTypesInfo = {
+    GITHUB: {
+        label: 'GITHUB',
+        actionMapping: {
+            PULL: 'pull',
+            PUSH: 'push',
+        },
+        supportedActions: ['PULL', 'PUSH'],
+        actionSelectType: 'radio',
+        options: [
+            { label: 'PULL', value: 'pull', },
+            { label: 'PUSH', value: 'push', },
+        ],
+        defaultValue: 'pull',
+    },
 };
 
 module.exports = {
@@ -41,6 +50,5 @@ module.exports = {
     accessStatusesEnumReverse,
     requestStatusesEnum, 
     requestStatusesEnumReverse, 
-    resourceTypesEnum,
-    resourceTypesEnumReverse, 
+    resourceTypesInfo,
 }; 

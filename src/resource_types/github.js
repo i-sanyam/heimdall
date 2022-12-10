@@ -2,6 +2,7 @@ const axios = require('axios');
 
 const BaseResourceHandler = require('./base');
 const { GITHUB: GITHUBCONFIG } = require('./config');
+const constants = require('../utils/constants');
 
 const BASE_URL = 'https://api.github.com';
 
@@ -10,11 +11,9 @@ class GithubResourceHandler extends BaseResourceHandler {
         super();
     }
 
-    static actionMapping = {
-        PULL: 'pull',
-        PUSH: 'push',
-    };
-    static supportedActionTypes = [ this.actionMapping.PULL, this.actionMapping.PUSH ];
+    static resourceInfo = constants.resourceTypesInfo.GITHUB;
+    static actionMapping = this.resourceInfo.actionMapping;
+    static supportedActionTypes = this.resourceInfo.supportedActions;
 
     static async prerequisite(username) {
         const data = await axios({

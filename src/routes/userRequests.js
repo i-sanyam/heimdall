@@ -25,9 +25,15 @@ userRequestsRouter.get('/', ExpressRouteHandler(async (req) => {
 }));
 
 userRequestsRouter.post('/', ExpressRouteHandler(async (req) => {
-	const resourceId = req.body.resourceId;
+	const { resourceId, purpose } = req.body;
 	if (!resourceId) {
 		return [{ status: 400, message: 'Resource Id not present' }]
+	}
+	if (!purpose) {
+		return [{ status: 400, message: 'purpose not present' }]
+	}
+	if (purpose.length < 4) {
+		return [{ status: 400, message: 'Please write an elaborate purpose' }]
 	}
 
 	const resourceData = await resourceService.getResourceById(resourceId);
@@ -42,7 +48,10 @@ userRequestsRouter.post('/', ExpressRouteHandler(async (req) => {
 	}
 
 	const addedRequestDetails = await requestService.addUserRequest(userId, resourceId);
-	return [{ data: { requestId: addedRequestDetails.insertedId } }];
+	return [{
+		data: { requestId: addedRequestDetails.insertedId },
+		message: `Request Raised with _id: ${addedRequestDetails.insertedId}`,
+	}];
 }));
 
 userRequestsRouter.delete('/', ExpressRouteHandler(async (req) => {
