@@ -17,7 +17,7 @@ userRouter.get('/', ExpressRouteHandler((req, res) => {
     const parsedUserData = {
         login: userData.login,
         avatar_url: userData.avatar_url,
-        isAdmin: Array.isArray(userData.adminResourceGroups) && userData.adminResourceGroups.length > 0,
+        isAdmin: Array.isArray(userData.adminResourceGroupsArray) && userData.adminResourceGroupsArray.length > 0,
         _id: userData._id,
     }
     return [{
