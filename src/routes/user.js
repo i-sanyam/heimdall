@@ -13,9 +13,16 @@ userRouter.get('/logout', ExpressRouteHandler((req, res) => {
 }));
 
 userRouter.get('/', ExpressRouteHandler((req, res) => {
+    const userData = req.userData;
+    const parsedUserData = {
+        login: userData.login,
+        avatar_url: userData.avatar_url,
+        isAdmin: Array.isArray(userData.adminResourceGroups) && userData.adminResourceGroups.length > 0,
+        _id: userData._id,
+    }
     return [{
         message: 'Logged In',
-        data: req.userData,
+        data: parsedUserData,
     }];
 }));
 
