@@ -83,9 +83,9 @@ userRequestsRouter.post('/', ExpressRouteHandler(async (req) => {
 	}];
 }));
 
-userRequestsRouter.delete('/', ExpressRouteHandler(async (req) => {
+userRequestsRouter.delete('/:requestId', ExpressRouteHandler(async (req) => {
 	const userId = req.userData._id.toString();
-	const requestId = req.body.requestId;
+	const requestId = req?.params?.requestId;
 	if (!requestId) {
 		return [{ status: 400, message: 'Request Id not present' }]
 	}
