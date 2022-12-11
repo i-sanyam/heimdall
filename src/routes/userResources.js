@@ -52,9 +52,9 @@ UserResourcesRouter.delete('/relinquish', ExpressRouteHandler(async (req) => {
     }
     const resourceDetails = resourceDetailsArray[0];
 
-    const hasAccess = resourceService.hasUserResourceAccess(req.userData, resourceDetails);
+    const hasAccess = resourceService.isResourceVisibleToUser(req.userData, resourceDetails);
     if (!hasAccess) {
-        return [{ status: 401, message: 'You don\'t have access to resource' }];
+        return [{ status: 401, message: 'You don\'t have permission to view resource' }];
     }
 
     await resourceTypeHandler.removeAccess(resourceDetails.type, userDetails.login, resourceDetails.path);

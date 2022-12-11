@@ -126,7 +126,7 @@ const hasAdminResourceAccess = (adminData, resourceData) => {
 	return hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
 };
 
-const hasUserResourceAccess = (userData, resourceData) => {
+const isResourceVisibleToUser = (userData, resourceData) => {
     const resourceGroupIds = resourceData.resourceGroupsArray || [];
 	const userGroupIds = userData.userResourceGroupsArray;
 	return hasResourceGroupAccess(userGroupIds, resourceGroupIds);
@@ -138,5 +138,5 @@ module.exports = {
     getResourcesByResourceGroupIds,
     getUserAccesibleResources,
     hasAdminResourceAccess,
-    hasUserResourceAccess,
+    isResourceVisibleToUser,
 };
