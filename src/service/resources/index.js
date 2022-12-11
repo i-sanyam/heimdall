@@ -106,9 +106,9 @@ const hasAdminResourceAccess = (adminData, resourceData) => {
 	return hasResourceGroupAccess(adminGroupIds, resourceGroupIds);
 };
 
-const hasUserResourceAccess = (adminData, resourceData) => {
+const hasUserResourceAccess = (userData, resourceData) => {
     const resourceGroupIds = resourceData.resourceGroupsArray || [];
-	const userGroupIds = adminData.userResourceGroupsArray;
+	const userGroupIds = userData.userResourceGroupsArray;
 	return hasResourceGroupAccess(userGroupIds, resourceGroupIds);
 };
 

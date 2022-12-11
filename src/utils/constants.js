@@ -35,13 +35,14 @@ const resourceTypesInfo = {
             PULL: 'pull',
             PUSH: 'push',
         },
-        supportedActions: ['PULL', 'PUSH'],
+        supportedActions: ['pull', 'push'],
         actionSelectType: 'radio',
         options: [
             { label: 'PULL', value: 'pull', },
             { label: 'PUSH', value: 'push', },
         ],
         defaultValue: 'pull',
+        maxActionCount: 1,
     },
 };
 
