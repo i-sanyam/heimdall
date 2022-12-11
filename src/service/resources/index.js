@@ -60,7 +60,25 @@ const getResourcesByResourceGroupIds = async (resourceGroupIds, userId) => {
                         $project: { _id: 1 },
                     }
                 ],
-                as: 'userResource',
+                as: 'userResources',
+            },
+        },
+        {
+            $lookup: {
+                from: 'requests',
+                localField: '_id',
+                foreignField: 'resourceId',
+                pipeline: [
+                    {
+                        $match: {
+                            requestRaisedBy: Mongo.__ObjectId(userId),
+                        }
+                    },
+                    // {
+                    //     $project: { _id: 1 },
+                    // }
+                ],
+                as: 'userRequests',
             },
         },
         {
@@ -70,9 +88,11 @@ const getResourcesByResourceGroupIds = async (resourceGroupIds, userId) => {
                 name: 1,
                 path: 1,
                 url: 1,
-                userResource: {
-                    _id: 1,
-                },
+                // userResource: {
+                //     _id: 1,
+                // },
+                userResources: 1,
+                userRequests: 1,
             },
         }
     ]);

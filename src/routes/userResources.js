@@ -28,26 +28,12 @@ UserResourcesRouter.get('/', ExpressRouteHandler(async (req) => {
 
     const allResources = await resourceService.getResourcesByResourceGroupIds(userGroupIds, userId);
     const mappedResources = allResources.map((resource) => {
-        const { _id, type, name, path, url, userResource } = resource;
+        const { _id, type, name, path, url, userResources, userRequests } = resource;
+        const openRequest = userRequests.find(request => request.status === constants.requestStatusesEnum.OPEN);
+        const hasAccess = userResources && userResources[0] && userResources[0]._id ? true : false;
+        const hasRequested = openRequest && openRequest._id ? true : false;
         return {
-            _id, type, name, path, url,
-            hasAccess: userResource && userResource[0] && userResource[0]._id ? true : false,
-        };
-    });
-    return [{ data: mappedResources }];
-}));
-
-// returns resources to which user has access
-UserResourcesRouter.get('/access', ExpressRouteHandler(async (req) => {
-    const userDetails = req.userData;
-    const userId = userDetails._id;
-
-    const allResources = await resourceService.getUserAccesibleResources(userId);
-    const mappedResources = allResources.map((userResource) => {
-        const resourceDetails = userResource.resourceDetails && userResource.resourceDetails[0] || {}; 
-        return {
-            ...userResource,
-            resourceDetails,
+            _id, type, name, path, url, hasAccess, hasRequested,
         };
     });
     return [{ data: mappedResources }];
