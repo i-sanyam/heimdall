@@ -65,7 +65,7 @@ userRequestsRouter.post('/', ExpressRouteHandler(async (req) => {
 	// check if the resource is visible
 	const hasAccess = resourceService.isResourceVisibleToUser(req.userData, resourceDetails);
     if (!hasAccess) {
-        return [{ status: 410, message: 'You do not have permission to view this resource.' }];
+        return [{ status: 403, message: 'You do not have permission to view this resource.' }];
     }
 
 	const userId = req.userData._id.toString();
