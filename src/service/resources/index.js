@@ -72,6 +72,7 @@ const getResourcesByResourceGroupIds = async (resourceGroupIds, userId) => {
                     {
                         $match: {
                             requestRaisedBy: Mongo.__ObjectId(userId),
+                            status: constants.requestStatusesEnum.OPEN,
                         }
                     },
                     // {

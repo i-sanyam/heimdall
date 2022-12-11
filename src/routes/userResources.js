@@ -33,7 +33,9 @@ UserResourcesRouter.get('/', ExpressRouteHandler(async (req) => {
         const hasAccess = userResources && userResources[0] && userResources[0]._id ? true : false;
         const hasRequested = openRequest && openRequest._id ? true : false;
         return {
-            _id, type, name, path, url, hasAccess, hasRequested,
+            _id, type, name, path, url,
+            hasAccess, hasRequested,
+            requestedAt: openRequest.createdAt,
         };
     });
     return [{ data: mappedResources }];
