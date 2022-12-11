@@ -3,8 +3,9 @@
 const Mongo = require('../../mongo');
 const { requestStatusesEnum } = require('../../utils/constants');
 
-const addUserRequest = async (userId, resourceId) => {
+const addUserRequest = async ({userId, resourceId, purpose, actions}) => {
     return await Mongo.Requests.insertOne({
+        purpose, actions,
         requestRaisedBy: Mongo.__ObjectId(userId),
         resourceId: Mongo.__ObjectId(resourceId),
         status: requestStatusesEnum.OPEN,

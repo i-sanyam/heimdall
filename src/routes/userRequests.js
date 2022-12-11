@@ -25,21 +25,48 @@ userRequestsRouter.get('/', ExpressRouteHandler(async (req) => {
 }));
 
 userRequestsRouter.post('/', ExpressRouteHandler(async (req) => {
-	const { resourceId, purpose } = req.body;
+	const { resourceId, purpose, actions, resourceType } = req.body;
 	if (!resourceId) {
-		return [{ status: 400, message: 'Resource Id not present' }]
+		return [{ status: 400, message: 'Resource Id not present' }];
 	}
 	if (!purpose) {
-		return [{ status: 400, message: 'purpose not present' }]
+		return [{ status: 400, message: 'purpose not present' }];
 	}
 	if (purpose.length < 4) {
-		return [{ status: 400, message: 'Please write an elaborate purpose' }]
+		return [{ status: 400, message: 'Please write an elaborate purpose' }];
+	}
+	if (!Array.isArray(actions) && actions.length === 0) {
+		return [{ status: 400, message: 'Action List cannot be empty' }];
+	}
+	if (!resourceType) {
+		return [{ status: 400, message: 'resourceType not present' }];
+	}
+	if (!constants.resourceTypesInfo[resourceType]) {
+		return [{ status: 400, message: 'Invalid Resource Type' }];
+	}
+	const resourceTypeInfo = constants.resourceTypesInfo[resourceType];
+
+	// validate actions
+	if (actions.length > resourceTypeInfo.maxActionCount) {
+		return [{ status: 400, message: `Request is for ${actions.length} action(s). Maximum ${resourceTypeInfo.maxActionCount} action(s) are allowed.` }];
 	}
 
+	if (!actions.every(action => resourceTypeInfo.supportedActions.includes(action))) {
+		return [{ status: 400, message: `Invalid Action. Valid Action(s) are ${resourceTypeInfo.prettyActions}` }];
+	}
+
+	// validate resource
 	const resourceData = await resourceService.getResourceById(resourceId);
 	if (!resourceData || resourceData.length === 0) {
 		return [{ status: 404, message: 'Invaid Resource Id' }];
 	}
+	const resourceDetails = resourceData[0];
+
+	// check if the user already has access
+	const hasAccess = resourceService.hasUserResourceAccess(req.userData, resourceDetails);
+    if (hasAccess) {
+        return [{ status: 410, message: 'User already has access to resource.' }];
+    }
 
 	const userId = req.userData._id.toString();
 	const existingUserRequests = await requestService.getUserRequests(userId, constants.requestStatusesEnum.OPEN, resourceId);
@@ -47,7 +74,9 @@ userRequestsRouter.post('/', ExpressRouteHandler(async (req) => {
 		return [{ status: 409, message: 'Request Already Raised' }];
 	}
 
-	const addedRequestDetails = await requestService.addUserRequest(userId, resourceId);
+	const addedRequestDetails = await requestService.addUserRequest({
+		userId, resourceId, purpose, actions
+	});
 	return [{
 		data: { requestId: addedRequestDetails.insertedId },
 		message: `Request Raised with _id: ${addedRequestDetails.insertedId}`,

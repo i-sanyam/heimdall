@@ -36,6 +36,7 @@ const resourceTypesInfo = {
             PUSH: 'push',
         },
         supportedActions: ['pull', 'push'],
+        prettyActions: ['PULL', 'PUSH'],
         actionSelectType: 'radio',
         options: [
             { label: 'PULL', value: 'pull', },
